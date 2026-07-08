@@ -38,8 +38,11 @@ export const hashkeyChain = defineChain({
  * Set VITE_WALLETCONNECT_PROJECT_ID (from https://cloud.walletconnect.com) to
  * enable the WalletConnect/mobile wallets; injected (MetaMask) works without it.
  */
+// `||` (not `??`) so an empty env value also falls back — RainbowKit's
+// getDefaultConfig throws if projectId is falsy. Set a real id from
+// https://cloud.walletconnect.com to enable WalletConnect/mobile wallets.
 const WALLETCONNECT_PROJECT_ID =
-  (import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined) ?? "molfi_hashkey_dev";
+  (import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined) || "molfi_hashkey_dev";
 
 export const wagmiConfig = getDefaultConfig({
   appName: "Molfi",

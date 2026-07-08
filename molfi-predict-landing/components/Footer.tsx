@@ -21,7 +21,7 @@ export function Footer() {
                         <span className="text-2xl font-black text-white tracking-tighter uppercase font-headline">Molfi</span>
                     </div>
                     <p className="text-on-surface-variant text-base font-medium max-w-sm leading-relaxed">
-                        The ultimate agentic wallet for high-performance trading on HashKey Chain. Research, trade, and deploy with AI.
+                        Private, agent-native prediction markets on HashKey Chain. Bet on real-world outcomes — your side stays hidden, your proof is on-chain.
                     </p>
                 </div>
 
@@ -29,9 +29,9 @@ export function Footer() {
                     <div className="space-y-8">
                         <h4 className="font-black text-white uppercase tracking-[0.2em] text-[11px]">Product</h4>
                         <ul className="space-y-4 font-bold text-on-surface-variant">
-                            <li><Link href="#" className="hover:text-primary transition-colors">Extension</Link></li>
-                            <li><Link href="#" className="hover:text-primary transition-colors">Mobile App</Link></li>
-                            <li><Link href="#" className="hover:text-primary transition-colors">Agentic Wallet</Link></li>
+                            <li><Link href="#" className="hover:text-primary transition-colors">Confidential Bets</Link></li>
+                            <li><Link href="#" className="hover:text-primary transition-colors">ZK-Gated Betting</Link></li>
+                            <li><Link href="#" className="hover:text-primary transition-colors">Agent SDK</Link></li>
                         </ul>
                     </div>
                     <div className="space-y-8">

@@ -20,7 +20,7 @@ export default function DownloadPage() {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-12"
         >
           <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          Multi-platform access
+          Agent-native access
         </motion.div>
 
         {/* Heading */}
@@ -30,7 +30,7 @@ export default function DownloadPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-5xl md:text-7xl font-black tracking-[-0.04em] mb-8 leading-[1.0] font-headline"
         >
-          Download Molfi
+          Get Started with Molfi
         </motion.h1>
 
         {/* Subtext */}
@@ -40,7 +40,7 @@ export default function DownloadPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-on-surface-variant text-lg md:text-xl font-medium max-w-2xl mb-24 leading-relaxed"
         >
-          Start your journey into high-performance agentic trading on HashKey Chain today.
+          Wire up the SDK and the MCP server, and let an agent bet in private on HashKey Chain — ZK-verified and HSP-settled, end to end.
         </motion.p>
 
         {/* Download Cards */}
@@ -55,17 +55,17 @@ export default function DownloadPage() {
           >
             <div className="flex justify-between items-start relative z-10">
               <div className="flex-1">
-                <h3 className="text-2xl font-black text-white mb-4 tracking-tight">Molfi Desktop App</h3>
+                <h3 className="text-2xl font-black text-white mb-4 tracking-tight">Molfi TypeScript SDK</h3>
                 <p className="text-on-surface-variant font-medium leading-relaxed mb-8 max-w-xl">
-                  The primary Molfi experience. High-performance trading dashboard and real-time AI market analysis.
+                  The core building block. Create a wallet, list markets, place a ZK-verified confidential bet, and redeem winnings with a proof — all in a few lines of code.
                 </p>
                 <div className="flex items-center gap-6">
                   <button className="bg-primary text-on-primary px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] primary-glow hover:opacity-90 active:scale-95 transition-all flex items-center gap-2">
                     <Download size={16} />
-                    Download for Windows
+                    Get the SDK
                   </button>
                   <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest opacity-60">
-                    Version 1.0 • Powered by HashKey Chain
+                    HashKey Chain testnet • chainId 133
                   </span>
                 </div>
               </div>
@@ -89,15 +89,15 @@ export default function DownloadPage() {
               </div>
               <div>
                 <div className="flex items-center gap-3 mb-1">
-                  <h3 className="text-xl font-black text-white tracking-tight">Android Beta Available</h3>
+                  <h3 className="text-xl font-black text-white tracking-tight">Molfi MCP Server</h3>
                   <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">New</span>
                 </div>
-                <p className="text-on-surface-variant text-sm font-medium">Want to try it early? Download the APK directly.</p>
+                <p className="text-on-surface-variant text-sm font-medium">Plug Molfi into any agent — read one SKILL.md and it can bet and redeem on its own.</p>
               </div>
             </div>
             <button className="bg-surface-container-high text-white px-6 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] border border-outline-variant/10 hover:bg-surface-container-highest transition-all flex items-center gap-3">
               <Download size={16} />
-              Download Beta
+              Get MCP Server
             </button>
           </motion.div>
 
@@ -111,11 +111,11 @@ export default function DownloadPage() {
             <div className="flex justify-between items-start relative z-10">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-2xl font-black text-white tracking-tight">Molfi Extension</h3>
+                  <h3 className="text-2xl font-black text-white tracking-tight">Molfi Web App</h3>
                   <span className="px-2 py-0.5 rounded-md bg-white/5 text-white/40 text-[8px] font-black uppercase tracking-widest">Coming Soon</span>
                 </div>
                 <p className="text-on-surface-variant font-medium leading-relaxed mb-8 max-w-xl">
-                  The pro desktop experience. Built for power users who need dedicated performance and customized workspaces.
+                  A human-facing venue for placing confidential bets — connect via RainbowKit or MetaMask and bet in private. Leave your email to get early access.
                 </p>
                 
                 <div className="max-w-md flex items-center gap-3">

@@ -83,9 +83,9 @@ export function Navbar() {
               isOpen={openDropdown === 'products'} 
               onToggle={() => toggleDropdown(openDropdown === 'products' ? null : 'products')}
             >
-              <DropdownItem href="/download" icon={Monitor} title="Extension" desc="Smart browser companion" />
-              <DropdownItem href="/download" icon={Smartphone} title="Mobile App" desc="Trade on the go" />
-              <DropdownItem href="/download" icon={Wallet} title="Agentic Wallet" desc="Autonomous automation" />
+              <DropdownItem href="/download" icon={Monitor} title="Confidential Bets" desc="Your side stays hidden" />
+              <DropdownItem href="/download" icon={Smartphone} title="ZK-Gated Betting" desc="Prove solvency, stay private" />
+              <DropdownItem href="/download" icon={Wallet} title="Agent SDK" desc="Bet via one SKILL.md" />
             </NavDropdown>
 
             <NavDropdown 
@@ -93,8 +93,8 @@ export function Navbar() {
               isOpen={openDropdown === 'resources'} 
               onToggle={() => toggleDropdown(openDropdown === 'resources' ? null : 'resources')}
             >
-              <DropdownItem icon={BookOpen} title="Docs" desc="Integration guides" />
-              <DropdownItem icon={Shield} title="Security" desc="Audits and safety" />
+              <DropdownItem icon={BookOpen} title="Docs" desc="SKILL.md, SDK & MCP" />
+              <DropdownItem icon={Shield} title="ZK Proofs" desc="On-chain BN254 Groth16" />
               <DropdownItem icon={Globe} title="Ecosystem" desc="Built on HashKey Chain" />
             </NavDropdown>
 

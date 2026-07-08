@@ -22,27 +22,27 @@ export default function Home() {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-12"
         >
           <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          Powered by HashKey Chain
+          ZK-Private · Agent-Native · HashKey Chain
         </motion.div>
 
         {/* Headline */}
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-5xl md:text-[5.5rem] font-black tracking-[-0.04em] mb-8 leading-[1.0] font-headline max-w-4xl"
         >
-          The Most <span className="text-primary italic">Profitable</span> Way <br /> to Trade for Degens
+          Bet in <span className="text-primary italic">private</span>. <br /> Prove it on-chain.
         </motion.h1>
 
         {/* Subheadline */}
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-on-surface-variant text-lg md:text-xl font-medium max-w-2xl mb-12 leading-relaxed"
         >
-          Research, trade, and deploy with Molfi — the ultimate agentic wallet designed for high-performance trading on HashKey Chain.
+          Molfi is private, agent-native prediction markets on HashKey Chain. Bet on real-world outcomes — your YES/NO side stays hidden behind a commitment, and you claim winnings with a zero-knowledge proof, unlinkable to your bet.
         </motion.p>
 
         {/* CTA Button */}
@@ -56,7 +56,7 @@ export default function Home() {
             className="bg-primary text-on-primary px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 primary-glow hover:opacity-90 active:scale-95 transition-all mb-24"
           >
             <Download size={18} />
-            Download Molfi App
+            Place a Private Bet
           </Link>
         </motion.div>
 
@@ -79,16 +79,16 @@ export default function Home() {
             <div className="relative z-10 p-12 h-full flex flex-col justify-end">
               <div className="max-w-md">
                 <h3 className="text-3xl font-black text-white mb-4 tracking-tight flex items-center gap-3">
-                  Molfi Extension <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
+                  Confidential Bets <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
                 </h3>
                 <p className="text-on-surface-variant font-medium leading-relaxed">
-                  Your smart crypto companion in the browser. Research, track, and trade — all in one seamless extension powered by AI agents.
+                  Your YES/NO side stays hidden on-chain behind a commitment. At settlement the contract injects the resolved winner as a public input, so losing notes can't prove — and you claim with a zero-knowledge proof that's unlinkable to your bet.
                 </p>
               </div>
             </div>
             {/* Image Placeholder */}
             <div className="absolute top-12 left-12 right-12 bottom-48 bg-black/40 rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden">
-               <span className="text-white/10 font-black uppercase tracking-widest text-sm">Molfi Extension UI Placeholder</span>
+               <span className="text-white/10 font-black uppercase tracking-widest text-sm">Confidential Bet · Side Hidden</span>
                {/* Decorative elements to look like a UI */}
                <div className="absolute top-4 left-4 right-4 h-8 bg-white/5 rounded-lg flex items-center px-4 gap-2">
                  <div className="w-2 h-2 rounded-full bg-red-500/50" />
@@ -107,15 +107,15 @@ export default function Home() {
           >
             <div className="relative z-10 p-12 h-full flex flex-col justify-end">
               <h3 className="text-3xl font-black text-white mb-4 tracking-tight flex items-center gap-3">
-                Molfi Mobile App <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
+                ZK-Gated Betting <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
               </h3>
               <p className="text-on-surface-variant font-medium leading-relaxed">
-                Trade and track on the go. Your entire portfolio, available anywhere, anytime with enterprise-grade security.
+                Prove you're solvent — hidden collateral above the threshold — with a single-use nullifier. No one sees your balance, and no bet can be replayed. BN254 Groth16, verified on-chain.
               </p>
             </div>
             {/* Image Placeholder */}
             <div className="absolute top-12 left-12 right-12 bottom-48 bg-black/40 rounded-3xl border border-white/5 flex items-center justify-center">
-               <span className="text-white/10 font-black uppercase tracking-widest text-sm text-center px-8">Mobile App Mockup Placeholder</span>
+               <span className="text-white/10 font-black uppercase tracking-widest text-sm text-center px-8">Solvency Proof · Nullifier</span>
             </div>
           </motion.div>
 
@@ -128,15 +128,15 @@ export default function Home() {
           >
             <div className="relative z-10 p-12 h-full flex flex-col justify-end">
               <h3 className="text-3xl font-black text-white mb-4 tracking-tight flex items-center gap-3">
-                Agentic Wallet <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
+                Agent-Native <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
               </h3>
               <p className="text-on-surface-variant font-medium leading-relaxed">
-                Secure, AI-powered wallet with smart automation and safety checks built-in. Let your wallet work for you.
+                An AI agent reads one SKILL.md, spins up a wallet, funds itself, places a ZK-verified bet, and redeems — no human in the loop. Ships with a TypeScript SDK and an MCP server.
               </p>
             </div>
             {/* Image Placeholder */}
             <div className="absolute top-12 left-12 right-12 bottom-48 bg-black/40 rounded-3xl border border-white/5 flex items-center justify-center">
-               <span className="text-white/10 font-black uppercase tracking-widest text-sm text-center px-8">Agentic Wallet Visual Placeholder</span>
+               <span className="text-white/10 font-black uppercase tracking-widest text-sm text-center px-8">SKILL.md · SDK · MCP Server</span>
             </div>
           </motion.div>
 
@@ -149,10 +149,10 @@ export default function Home() {
           >
             <div className="relative z-10 p-12 h-full flex flex-col justify-end">
               <h3 className="text-3xl font-black text-white mb-4 tracking-tight flex items-center gap-3">
-                Research AI <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
+                Privacy Pool <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
               </h3>
               <p className="text-on-surface-variant font-medium leading-relaxed">
-                Deep market insights instantly. Make informed decisions with AI-powered analysis of on-chain data.
+                Deposit into a Poseidon Merkle tree and withdraw with a membership proof and a nullifier. Shielded in, shielded out — the link between deposit and withdrawal never touches the chain.
               </p>
             </div>
             {/* Image Placeholder */}
@@ -170,10 +170,10 @@ export default function Home() {
           >
             <div className="relative z-10 p-12 h-full flex flex-col justify-end">
               <h3 className="text-3xl font-black text-white mb-4 tracking-tight flex items-center gap-3">
-                Built for Speed <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
+                A Venue That Runs Itself <ArrowUpRight className="text-on-surface-variant group-hover:text-primary transition-colors" />
               </h3>
               <p className="text-on-surface-variant font-medium leading-relaxed">
-                Lightning fast execution and data retrieval on HashKey Chain. Zero lag, maximum efficiency.
+                Real mUSDC escrow and pari-mutuel payouts, with a keeper that auto-rolls 15m/30m crypto markets settled by an on-chain price oracle. No operator, no off-chain trust.
               </p>
             </div>
             {/* Image Placeholder */}
@@ -192,27 +192,27 @@ export default function Home() {
              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                <Shield size={32} />
              </div>
-             <h4 className="text-2xl font-black text-white">Trustless Security</h4>
+             <h4 className="text-2xl font-black text-white">Private by Proof</h4>
              <p className="text-on-surface-variant font-medium leading-relaxed">
-               Your keys, your crypto. Molfi is non-custodial and open-source, ensuring complete transparency and security.
+               Three real ZK mechanisms — gated bet, confidential bet, and privacy pool — all verified on-chain through HashKey's alt_bn128 precompiles (BN254 Groth16). Your side stays hidden; your proof is public.
              </p>
            </div>
            <div className="space-y-6">
              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                <Cpu size={32} />
              </div>
-             <h4 className="text-2xl font-black text-white">AI-First Engine</h4>
+             <h4 className="text-2xl font-black text-white">Agent-Native by Design</h4>
              <p className="text-on-surface-variant font-medium leading-relaxed">
-               Powered by advanced Large Language Models tailored for the crypto ecosystem, providing real-time alpha.
+               One SKILL.md, a TypeScript SDK, and an MCP server let an autonomous agent fund a wallet, bet, prove, and redeem end-to-end — no human in the loop.
              </p>
            </div>
            <div className="space-y-6">
              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                <Globe size={32} />
              </div>
-             <h4 className="text-2xl font-black text-white">HashKey Native</h4>
+             <h4 className="text-2xl font-black text-white">HSP-Settled on HashKey Chain</h4>
              <p className="text-on-surface-variant font-medium leading-relaxed">
-               Optimized specifically for HashKey Chain, an EVM network offering low fees, fast finality, and scalability with the native HSK token.
+               Payments run on HSP (HashKey Settlement Protocol): an agent pays a verifiable micro-fee through an x402 paywall to unlock the ZK proof service, settled zero-custody on HashKey Chain (testnet, chainId 133).
              </p>
            </div>
         </div>
