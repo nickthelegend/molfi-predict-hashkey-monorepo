@@ -4,9 +4,9 @@
  * Molfi's on-chain layer targets HashKey Chain only. Testnet is chainId 133,
  * mainnet 177. Override via VITE_HSK_CHAIN_ID / VITE_HSK_RPC_URL.
  */
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { defineChain } from "viem";
-import { createConfig, http } from "wagmi";
-import { injected } from "wagmi/connectors";
+import { http } from "wagmi";
 
 export const HSK_CHAIN_ID = Number(import.meta.env.VITE_HSK_CHAIN_ID ?? 133);
 
@@ -32,11 +32,21 @@ export const hashkeyChain = defineChain({
   testnet: !IS_MAINNET,
 });
 
-/** wagmi config — injected (MetaMask / browser wallet) on HashKey Chain. */
-export const wagmiConfig = createConfig({
+/**
+ * wagmi + RainbowKit config for HashKey Chain. `getDefaultConfig` wires the
+ * standard connector set (MetaMask, Rainbow, Coinbase, WalletConnect, injected).
+ * Set VITE_WALLETCONNECT_PROJECT_ID (from https://cloud.walletconnect.com) to
+ * enable the WalletConnect/mobile wallets; injected (MetaMask) works without it.
+ */
+const WALLETCONNECT_PROJECT_ID =
+  (import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined) ?? "molfi_hashkey_dev";
+
+export const wagmiConfig = getDefaultConfig({
+  appName: "Molfi",
+  projectId: WALLETCONNECT_PROJECT_ID,
   chains: [hashkeyChain],
-  connectors: [injected()],
   transports: { [hashkeyChain.id]: http(HSK_RPC_URL) },
+  ssr: false,
 });
 
 /** EIP-3085 `wallet_addEthereumChain` params for MetaMask. */
