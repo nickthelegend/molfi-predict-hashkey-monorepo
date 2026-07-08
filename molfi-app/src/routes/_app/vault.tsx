@@ -5,7 +5,7 @@ import { ArrowDownLeft, Coins, Loader2, Receipt, ShieldCheck, TrendingUp } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LivePriceChart } from "@/components/LivePriceChart";
-import { vaultDepositOnChain } from "@/lib/hsk/evm";
+import { vaultDepositOnChain, vaultWithdrawAll } from "@/lib/hsk/evm";
 import { useWallet } from "@/context/WalletContext";
 import {
   fetchVaults,
@@ -110,6 +110,22 @@ function VaultPage() {
     }
   };
 
+  const handleWithdraw = async () => {
+    if (!address) return void connect();
+    setDepositing(true);
+    try {
+      // Burn all shares → receive principal + accrued yield (wallet-signed).
+      const hash = await vaultWithdrawAll();
+      showTxSuccess("Withdrew your vault position + yield", hash);
+      await queryClient.invalidateQueries({ queryKey: ["vaults"] });
+      await queryClient.invalidateQueries({ queryKey: ["vault-position", address] });
+    } catch (e) {
+      showError(e instanceof Error ? e.message : "Withdraw failed");
+    } finally {
+      setDepositing(false);
+    }
+  };
+
   return (
     <section className={pageSimple}>
       <div>
@@ -189,6 +205,17 @@ function VaultPage() {
             {depositing ? <Loader2 className="h-4 w-4 animate-spin" /> : <TrendingUp className="h-4 w-4" />}
             {address ? "Deposit to vault" : "Connect wallet"}
           </Button>
+          {address && pos && pos.value > 0 ? (
+            <Button
+              onClick={handleWithdraw}
+              disabled={depositing}
+              variant="outline"
+              className="w-full gap-1.5"
+              size="lg"
+            >
+              Withdraw all · {usd(pos.value)} mUSDC
+            </Button>
+          ) : null}
           {address && pos ? (
             <div className="space-y-1 rounded-lg border border-border bg-background p-3 text-sm">
               <div className="flex justify-between">

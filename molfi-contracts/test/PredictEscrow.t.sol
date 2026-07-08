@@ -27,7 +27,7 @@ contract PredictEscrowTest is Test, ZkFixtures {
 
     function setUp() public {
         usdc = new MockUSDC(admin);
-        vault = new Vault(admin);
+        vault = new Vault(admin, address(usdc));
         solvencyV = new SolvencyVerifier();
         market = new MockMarket();
         escrow = new PredictEscrow(admin, address(usdc), address(vault), address(solvencyV), address(market));

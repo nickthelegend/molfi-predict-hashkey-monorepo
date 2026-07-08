@@ -47,7 +47,7 @@ contract IntegrationTest is Test, ZkFixtures {
         vm.warp(1_000_000);
         vm.startPrank(admin);
         musdc = new MockUSDC(admin);
-        vault = new Vault(admin);
+        vault = new Vault(admin, address(musdc));
         oracle = new MockOracle(admin, 8);
         solvencyV = new SolvencyVerifier();
         confV = new ConfidentialBetVerifier();

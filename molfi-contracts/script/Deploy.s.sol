@@ -25,7 +25,7 @@ contract Deploy is Script {
         vm.startBroadcast(pk);
 
         MockUSDC musdc = new MockUSDC(admin);
-        Vault vault = new Vault(admin);
+        Vault vault = new Vault(admin, address(musdc));
         MockOracle oracle = new MockOracle(admin, 8); // 8-decimal price feed
 
         SolvencyVerifier solvencyV = new SolvencyVerifier();

@@ -180,6 +180,9 @@ export interface VaultPosition {
   deposited: number;
   sharePct: number;
   earned: number;
+  value?: number;
+  shares?: number;
+  apr?: number;
 }
 
 export async function fetchVaultPosition(address: string): Promise<VaultPosition> {

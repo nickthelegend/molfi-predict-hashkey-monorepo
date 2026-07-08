@@ -78,6 +78,7 @@ const oracle = new ethers.Contract(dep.oracle, abiOf("MockOracle"), signerOrProv
 const market = new ethers.Contract(dep.market, abiOf("Market"), signerOrProvider);
 const escrow = new ethers.Contract(dep.predictEscrow, abiOf("PredictEscrow"), signerOrProvider);
 const conf = new ethers.Contract(dep.confidentialBet, abiOf("ConfidentialBet"), signerOrProvider);
+const vault = new ethers.Contract(dep.vault, abiOf("Vault"), signerOrProvider);
 const CONF_DENOM = 100; // fixed uniform denomination (mUSDC) — hides the amount
 const CONF_PAYOUT = 200; // PAYOUT_MULT(2) × denom on a winning claim
 const OC_TOKENS = ["BTC", "ETH", "SOL", "XLM", "LINK", "AVAX"];
@@ -580,15 +581,53 @@ app.get("/api/leaderboard", async (_req, res) => {
 
 app.get("/api/vaults", async (_req, res) => {
   try {
-    const assetsUnits = Number(await musdc.balanceOf(dep.vault)) || 0;
+    const [assetsUnits, sharesUnits, priceUnits] = await Promise.all([
+      vault.totalAssets(), vault.totalShares(), vault.sharePrice(),
+    ]);
+    const tvl = Number(assetsUnits) / U;
+    const sharePrice = Number(priceUnits) / U; // starts ~1.0, rises with fees
+    // Fees earned = TVL above the total shares' cost basis ≈ (sharePrice-1) * shares.
+    const shares = Number(sharesUnits) / U;
     const [feeAgg] = await OnchainTrades.aggregate([
       { $match: { kind: "bet" } }, { $group: { _id: null, staked: { $sum: "$amount" }, n: { $sum: 1 } } },
     ]).toArray();
-    const tvl = assetsUnits / U;
-    res.json([{ _id: VAULT_ID, name: "Molfi LP Vault", asset: "mUSDC", tvl: r2(tvl),
-      feesEarned: r2(tvl), feeVolume: r2((feeAgg?.staked || 0) * 0.02), onchain: true }]);
+    const feeVolume = r2((feeAgg?.staked || 0) * 0.02); // total 2% fees generated
+    const lpCount = await VaultDeposits.estimatedDocumentCount().catch(() => 0);
+    // Vault-wide fee yield: protocol fees generated as a % of current TVL.
+    const feeApr = tvl > 0 ? Math.round((feeVolume / tvl) * 1000) / 10 : 0;
+    res.json([{
+      _id: VAULT_ID, name: "Molfi LP Vault", asset: "mUSDC",
+      tvl: r2(tvl), totalShares: r2(shares), sharePrice: Math.round(sharePrice * 1e4) / 1e4,
+      feesEarned: feeVolume, feeVolume,
+      apr: feeApr,
+      depositors: lpCount, onchain: true,
+    }]);
   } catch (e) {
-    res.json([{ _id: VAULT_ID, name: "Molfi LP Vault", asset: "mUSDC", tvl: 0, feesEarned: 0, error: e.message }]);
+    res.json([{ _id: VAULT_ID, name: "Molfi LP Vault", asset: "mUSDC", tvl: 0, feesEarned: 0, sharePrice: 1, apr: 0, error: e.message }]);
+  }
+});
+
+// An LP's real vault position (shares, current value, accrued yield).
+app.get("/api/vaults/position/:address", async (req, res) => {
+  try {
+    const [shares, value, earned, principal] = await Promise.all([
+      vault.balanceOf(req.params.address),
+      vault.assetsOf(req.params.address),
+      vault.earnedOf(req.params.address),
+      vault.principal(req.params.address),
+    ]);
+    const p = Number(principal) / U;
+    const v = Number(value) / U;
+    res.json({
+      deposited: r2(p),
+      value: r2(v),
+      earned: r2(Number(earned) / U),
+      shares: r2(Number(shares) / U),
+      sharePct: 0, // filled client-side vs TVL if needed
+      apr: p > 0 ? Math.round(((v - p) / p) * 1000) / 10 : 0,
+    });
+  } catch (e) {
+    res.json({ deposited: 0, value: 0, earned: 0, shares: 0, error: e.message });
   }
 });
 

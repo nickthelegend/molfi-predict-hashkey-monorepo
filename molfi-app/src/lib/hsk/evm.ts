@@ -294,17 +294,56 @@ export async function redeem(
 // ---------------------------------------------------------------------------
 
 /**
- * Deposit `amountUsdc` mUSDC into the on-chain LP vault. The Vault contract holds
- * token balances directly, so a deposit is an mUSDC transfer into the vault.
+ * Deposit `amountUsdc` mUSDC into the LP vault → mints vault shares at NAV. The
+ * 2% protocol fee routed to the vault by PredictEscrow accrues to these shares,
+ * so the LP earns real yield.
  */
 export async function vaultDepositOnChain(
   walletAddress: string,
   amountUsdc: number,
 ): Promise<string> {
-  void walletAddress;
   const amount = toUnits(amountUsdc);
-  const musdc = await writeContract(CONTRACTS.musdc, ABIS.musdc);
-  return sendAndWait(musdc.transfer(CONTRACTS.vault, amount));
+  await ensureApproval(walletAddress, CONTRACTS.vault, amount);
+  const vault = await writeContract(CONTRACTS.vault, ABIS.vault);
+  return sendAndWait(vault.deposit(amount));
+}
+
+/** Withdraw the LP's entire vault position (principal + accrued yield). */
+export async function vaultWithdrawAll(): Promise<string> {
+  const vault = await writeContract(CONTRACTS.vault, ABIS.vault);
+  return sendAndWait(vault.withdrawAll());
+}
+
+/** Withdraw a specific number of shares (base units). */
+export async function vaultWithdrawShares(shares: bigint): Promise<string> {
+  const vault = await writeContract(CONTRACTS.vault, ABIS.vault);
+  return sendAndWait(vault.withdraw(shares));
+}
+
+/** Vault-wide stats: TVL (mUSDC), NAV/share, total shares. */
+export async function vaultStats(): Promise<{ tvl: number; sharePrice: number; totalShares: number }> {
+  const v = readContract(CONTRACTS.vault, ABIS.vault);
+  const [tvl, sp, ts] = await Promise.all([v.totalAssets(), v.sharePrice(), v.totalShares()]);
+  return { tvl: Number(tvl) / 1e6, sharePrice: Number(sp) / 1e6, totalShares: Number(ts) / 1e6 };
+}
+
+/** An LP's position: shares, current value, accrued yield, net principal (mUSDC). */
+export async function vaultPositionOf(
+  addr: string,
+): Promise<{ shares: bigint; value: number; earned: number; principal: number }> {
+  const v = readContract(CONTRACTS.vault, ABIS.vault);
+  const [shares, value, earned, principal] = await Promise.all([
+    v.balanceOf(addr),
+    v.assetsOf(addr),
+    v.earnedOf(addr),
+    v.principal(addr),
+  ]);
+  return {
+    shares: shares as bigint,
+    value: Number(value) / 1e6,
+    earned: Number(earned) / 1e6,
+    principal: Number(principal) / 1e6,
+  };
 }
 
 // ---------------------------------------------------------------------------
