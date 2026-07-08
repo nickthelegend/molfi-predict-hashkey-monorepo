@@ -56,7 +56,7 @@ await agent.redeem(marketId);                    // claim winnings
 
 ```mermaid
 flowchart LR
-  U["👤 Users"] --> APP["molfi-predict-app (React/Vite/wagmi)"]
+  U["👤 Users"] --> APP["molfi-app (React/Vite/wagmi + RainbowKit)"]
   AG["🤖 Agents"] --> SDK["molfi-predict-sdk + SKILL.md"]
   APP --> ESC["PredictEscrow<br/>mUSDC · betZk · redeem"]
   SDK --> ESC
@@ -82,7 +82,7 @@ cd ../molfi-backend && npm install && cp .env.example .env   # set MONGODB_URI, 
 npm start                        # → http://localhost:4000
 
 # 3. Web app
-cd ../molfi-predict-app && npm install && npm run dev
+cd ../molfi-app && npm install && npm run dev
 ```
 
 Open the app → **Connect** (MetaMask, HashKey testnet) → **Faucet** → open a market → bet (Standard or 🔒 Private).
@@ -109,8 +109,7 @@ RPC `https://testnet.hsk.xyz` · Explorer `https://testnet-explorer.hsk.xyz` · 
 | [molfi-contracts](molfi-contracts) | Solidity contracts (Foundry) + deploy & on-chain ZK lifecycle scripts |
 | [molfi-circuits](molfi-circuits) | Circom ZK circuits + BN254 Groth16 keys + Solidity verifier export |
 | [molfi-backend](molfi-backend) | Market engine, keeper, ZK + confidential proof service, IPFS chat |
-| [molfi-predict-app](molfi-predict-app) | Primary web app (React + Vite + wagmi/viem) |
-| [molfi-app](molfi-app) | Secondary web app |
+| [molfi-app](molfi-app) | Web app (React + Vite + wagmi + RainbowKit) |
 | [molfi-predict-sdk](molfi-predict-sdk) | Agent SDK + `SKILL.md` |
 | [molfi-mcp](molfi-mcp) | Agentic **MCP server** — an LLM agent creates a wallet, funds itself, and trades via MCP tools (verified end-to-end on testnet) |
 | [molfi-predict-landing](molfi-predict-landing) | Landing page (Next.js) |
