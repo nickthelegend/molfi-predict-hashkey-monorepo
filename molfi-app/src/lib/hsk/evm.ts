@@ -10,8 +10,9 @@
  * (File path retains the legacy `hashkey/` name so existing imports keep working;
  * the contents target HashKey Chain / EVM only — no HashKey code remains.)
  */
-import { BrowserProvider, JsonRpcProvider, Contract, parseUnits } from "ethers";
-import { HSK_RPC_URL } from "@/lib/hsk/chain";
+import { BrowserProvider, JsonRpcProvider, JsonRpcSigner, Contract, parseUnits } from "ethers";
+import { getConnectorClient } from "@wagmi/core";
+import { HSK_RPC_URL, wagmiConfig } from "@/lib/hsk/chain";
 import { CONTRACTS, ABIS, MUSDC_DECIMALS } from "@/lib/hsk/contracts";
 
 // ---------------------------------------------------------------------------
@@ -24,18 +25,23 @@ function reader(): JsonRpcProvider {
   return readProvider;
 }
 
-interface Eip1193 {
-  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
-}
-function injectedProvider(): Eip1193 {
-  const eth = (globalThis as { ethereum?: Eip1193 }).ethereum;
-  if (!eth) throw new Error("No EVM wallet found. Install MetaMask to continue.");
-  return eth;
-}
-
-async function signer() {
-  const provider = new BrowserProvider(injectedProvider() as never);
-  return provider.getSigner();
+/**
+ * Signer for the ACTIVE wagmi connector — whatever RainbowKit connected
+ * (MetaMask / WalletConnect / Coinbase / injected). Adapts the connector's viem
+ * client to an ethers v6 signer so all writes go through the connected wallet,
+ * not just `window.ethereum`.
+ */
+async function signer(): Promise<JsonRpcSigner> {
+  let client;
+  try {
+    client = await getConnectorClient(wagmiConfig);
+  } catch {
+    throw new Error("Wallet not connected. Click Connect Wallet to continue.");
+  }
+  const { account, chain, transport } = client;
+  const network = chain ? { chainId: chain.id, name: chain.name } : undefined;
+  const provider = new BrowserProvider(transport as never, network);
+  return new JsonRpcSigner(provider, account.address);
 }
 
 function readContract(address: string, abi: unknown): Contract {
