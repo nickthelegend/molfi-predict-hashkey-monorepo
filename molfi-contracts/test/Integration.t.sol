@@ -85,7 +85,7 @@ contract IntegrationTest is Test, ZkFixtures {
         // 1. create a price market: "BTC >= $100k at close?"
         vm.prank(admin);
         market.createPriceMarket(
-            PMID, "BTC>=100k?", closeTs, address(oracle), btc, 100_000 * 1e8, market.OP_GTE(), 1 days
+            PMID, "BTC>=100k?", closeTs, address(oracle), btc, 100_000 * 1e8, 0 /*OP_GTE*/, 1 days
         );
 
         // 2. two bettors bet opposite sides (each 100 mUSDC)

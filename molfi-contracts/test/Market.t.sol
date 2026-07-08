@@ -61,7 +61,7 @@ contract MarketTest is Test, ZkFixtures {
     function test_CreatePriceMarketStoresSpec() public {
         vm.prank(admin);
         market.createPriceMarket(
-            bytes32("p1"), "BTC>=100k?", closeTs, address(oracle), btc, 100_000 * 1e8, market.OP_GTE(), 1 days
+            bytes32("p1"), "BTC>=100k?", closeTs, address(oracle), btc, 100_000 * 1e8, 0 /*OP_GTE*/, 1 days
         );
         Market.MarketData memory m = market.getMarket(bytes32("p1"));
         assertEq(m.closeTs, closeTs);
@@ -71,7 +71,7 @@ contract MarketTest is Test, ZkFixtures {
         vm.prank(alice);
         vm.expectRevert("not admin");
         market.createPriceMarket(
-            bytes32("p1"), "Q", closeTs, address(oracle), btc, 1, market.OP_GTE(), 1 days
+            bytes32("p1"), "Q", closeTs, address(oracle), btc, 1, 0 /*OP_GTE*/, 1 days
         );
     }
 
@@ -129,13 +129,17 @@ contract MarketTest is Test, ZkFixtures {
     }
 
     function test_ResolveFromOracleStaleReverts() public {
-        _createBtcMarket(market.OP_GTE(), 100_000 * 1e8);
+        // MockOracle always stamps the current time (never stale), so use a stale
+        // oracle mock that reports an old timestamp to exercise the guard.
+        MockStaleOracle stale = new MockStaleOracle();
         vm.prank(admin);
-        oracle.setPrice(btc, 100_000 * 1e8); // stamped now
-        // warp far past close AND past staleness window
-        vm.warp(closeTs + 2 days);
+        market.createPriceMarket(
+            bytes32("s1"), "Q", closeTs, address(stale), btc, 100_000 * 1e8, 0 /*OP_GTE*/, 1 hours
+        );
+        stale.set(100_000 * 1e8, uint64(block.timestamp)); // stamp = now (early)
+        vm.warp(closeTs + 2 days); // now far newer than the stamp
         vm.expectRevert("stale price");
-        market.resolveFromOracle(bytes32("p1"));
+        market.resolveFromOracle(bytes32("s1"));
     }
 
     function test_ResolveFromOracleGteYes() public {
@@ -233,6 +237,6 @@ contract MarketTest is Test, ZkFixtures {
         (uint256[2] memory a, uint256[2][2] memory b, uint256[2] memory c, uint256[2] memory pub) = mulProof();
         pub[1] = pub[1] + 1; // tamper public signal
         vm.expectRevert("proof rejected");
-        market.resolveWithProof(bytes32("m1"), market.OUTCOME_YES(), a, b, c, pub);
+        market.resolveWithProof(bytes32("m1"), 0 /*OUTCOME_YES*/, a, b, c, pub);
     }
 }
