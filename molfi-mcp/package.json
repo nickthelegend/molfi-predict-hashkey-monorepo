@@ -1,0 +1,13 @@
+{
+  "name": "molfi-mcp",
+  "version": "0.1.0",
+  "description": "Molfi agentic MCP server — trade private prediction markets on HashKey Chain",
+  "type": "module",
+  "bin": { "molfi-mcp": "server.js" },
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ethers": "^6.13.0",
+    "zod": "^3.23.0"
+  }
+}

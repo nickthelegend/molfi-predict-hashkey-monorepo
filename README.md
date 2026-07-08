@@ -112,4 +112,5 @@ RPC `https://testnet.hsk.xyz` · Explorer `https://testnet-explorer.hsk.xyz` · 
 | [molfi-predict-app](molfi-predict-app) | Primary web app (React + Vite + wagmi/viem) |
 | [molfi-app](molfi-app) | Secondary web app |
 | [molfi-predict-sdk](molfi-predict-sdk) | Agent SDK + `SKILL.md` |
+| [molfi-mcp](molfi-mcp) | Agentic **MCP server** — an LLM agent creates a wallet, funds itself, and trades via MCP tools (verified end-to-end on testnet) |
 | [molfi-predict-landing](molfi-predict-landing) | Landing page (Next.js) |
