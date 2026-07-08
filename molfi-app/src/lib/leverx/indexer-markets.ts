@@ -26,7 +26,7 @@ export interface LeverxMarketRow {
   /** Oracle strike grid (raw 1e9) — used for ATM UP quotes on catalog cards. */
   minStrikeRaw?: number;
   tickSizeRaw?: number;
-  /** Stellar binary-market extras — carried through gridUpDisplayRow's spread. */
+  /** HashKey binary-market extras — carried through gridUpDisplayRow's spread. */
   question?: string;
   onchainStatus?: number;
   onchainOutcome?: number;
@@ -34,8 +34,8 @@ export interface LeverxMarketRow {
   iconUrl?: string;
   /** Category id ("crypto" | "sports" | "politics" | …) for filtering + labels. */
   category?: string;
-  /** Source venue: on-chain Stellar, or a live Polymarket reference market. */
-  source?: "stellar" | "polymarket";
+  /** Source venue: on-chain HashKey, or a live Polymarket reference market. */
+  source?: "hashkey" | "polymarket";
 }
 
 const SCALE = Number(FLOAT_SCALING);

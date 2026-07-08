@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StellarMarketDetail } from "@/components/StellarMarketDetail";
+import { HskMarketDetail } from "@/components/HskMarketDetail";
 import { pageTitle } from "@/lib/brand";
 import { routePendingOptions } from "@/lib/router/route-options";
 
@@ -17,5 +17,5 @@ export const Route = createFileRoute("/_detail/predictions/$oracleId")({
 
 function OracleTradePage() {
   const { oracleId } = Route.useParams();
-  return <StellarMarketDetail oracleId={oracleId} />;
+  return <HskMarketDetail oracleId={oracleId} />;
 }

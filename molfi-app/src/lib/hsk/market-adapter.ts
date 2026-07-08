@@ -1,6 +1,6 @@
-import type { OnChainMarket } from "@/lib/stellar/soroban";
+import type { OnChainMarket } from "@/lib/hsk/evm";
 import type { LeverxMarketRow } from "@/lib/leverx/indexer-markets";
-import { MARKET_STATUS } from "@/lib/stellar/contracts";
+import { MARKET_STATUS } from "@/lib/hsk/contracts";
 
 /** Best-effort asset symbol from a market question, for the card's asset badge. */
 function assetFromQuestion(question: string): string {
@@ -24,7 +24,7 @@ function assetFromQuestion(question: string): string {
  * away instead of sitting in skeletons). The binary-market specifics
  * (question / status / outcome) ride along on the row and surface in the card.
  */
-export function stellarMarketToRow(m: OnChainMarket): LeverxMarketRow {
+export function hskMarketToRow(m: OnChainMarket): LeverxMarketRow {
   return {
     id: m.id,
     // Unique per market (the grid + hero dedupe on oracleId). `strikeRaw: 0`

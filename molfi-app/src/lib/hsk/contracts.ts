@@ -3,8 +3,8 @@
  * Network/RPC live in @/lib/hsk/chain. Source of truth:
  * molfi-contracts/deployments/133.json. Override any address via VITE_* env.
  *
- * (File path retains the legacy `stellar/` name so existing imports keep working;
- * the contents target HashKey Chain / EVM only — no Stellar code remains.)
+ * (File path retains the legacy `hashkey/` name so existing imports keep working;
+ * the contents target HashKey Chain / EVM only — no HashKey code remains.)
  */
 import MockUSDCAbi from "@/lib/hsk/abis/MockUSDC.json";
 import PredictEscrowAbi from "@/lib/hsk/abis/PredictEscrow.json";

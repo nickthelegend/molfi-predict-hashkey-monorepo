@@ -7,12 +7,12 @@
  * MockUSDC (faucet token), ConfidentialBet (hidden-side commitment notes),
  * Vault (LP).
  *
- * (File path retains the legacy `stellar/` name so existing imports keep working;
- * the contents target HashKey Chain / EVM only — no Stellar code remains.)
+ * (File path retains the legacy `hashkey/` name so existing imports keep working;
+ * the contents target HashKey Chain / EVM only — no HashKey code remains.)
  */
 import { BrowserProvider, JsonRpcProvider, Contract, parseUnits } from "ethers";
 import { HSK_RPC_URL } from "@/lib/hsk/chain";
-import { CONTRACTS, ABIS, MUSDC_DECIMALS } from "@/lib/stellar/contracts";
+import { CONTRACTS, ABIS, MUSDC_DECIMALS } from "@/lib/hsk/contracts";
 
 // ---------------------------------------------------------------------------
 // Providers / signers

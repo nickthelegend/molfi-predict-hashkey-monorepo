@@ -98,7 +98,7 @@ function ProblemIllustration() {
 function LayersIllustration() {
   const layers = [
     { name: "Molfi", sub: "Private bets · ZK proofs", accent: true },
-    { name: "Reflector", sub: "SEP-40 price oracle", accent: false },
+    { name: "oracle", sub: "SEP-40 price oracle", accent: false },
     { name: "HashKey Chain", sub: "On-chain settlement", accent: false },
   ];
 

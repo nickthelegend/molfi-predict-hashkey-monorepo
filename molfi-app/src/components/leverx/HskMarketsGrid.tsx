@@ -1,13 +1,13 @@
 import { BarChart3, ExternalLink, ShieldCheck } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MarketGridSkeleton } from "@/components/ui/market-skeleton";
-import type { OnChainMarket } from "@/lib/stellar/soroban";
+import type { OnChainMarket } from "@/lib/hsk/evm";
 import {
   CONTRACTS,
   MARKET_STATUS,
   OUTCOME,
   contractUrl,
-} from "@/lib/stellar/contracts";
+} from "@/lib/hsk/contracts";
 import { marketCard, marketCardBody, marketsGrid, pageState } from "@/lib/leverx/tw";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +40,7 @@ function formatClose(ts: number): string {
   });
 }
 
-export function StellarMarketsGrid({ markets, loading, error }: Props) {
+export function HskMarketsGrid({ markets, loading, error }: Props) {
   if (loading) return <MarketGridSkeleton />;
 
   if (error) {

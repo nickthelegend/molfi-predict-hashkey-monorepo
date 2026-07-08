@@ -3,7 +3,7 @@ export interface MarketCategoryDef {
   id: string;
   label: string;
   /** Where the category's markets come from. */
-  source: "stellar" | "polymarket" | "onchain";
+  source: "hashkey" | "polymarket" | "onchain";
   /** Polymarket Gamma tag id (for future categories). */
   tagId?: number;
   /** Not live yet — shows a "coming soon" panel. */
@@ -11,7 +11,7 @@ export interface MarketCategoryDef {
 }
 
 export const MARKET_CATEGORIES: MarketCategoryDef[] = [
-  { id: "crypto", label: "Crypto", source: "stellar" },
+  { id: "crypto", label: "Crypto", source: "hashkey" },
   { id: "sports", label: "Sports", source: "polymarket", tagId: 1, comingSoon: true },
   { id: "politics", label: "Politics", source: "polymarket", tagId: 2, comingSoon: true },
   { id: "economy", label: "Economy", source: "polymarket", tagId: 100328, comingSoon: true },

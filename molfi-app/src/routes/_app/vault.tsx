@@ -5,7 +5,7 @@ import { ArrowDownLeft, Coins, Loader2, Receipt, ShieldCheck, TrendingUp } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LivePriceChart } from "@/components/LivePriceChart";
-import { vaultDepositOnChain } from "@/lib/stellar/soroban";
+import { vaultDepositOnChain } from "@/lib/hsk/evm";
 import { useWallet } from "@/context/WalletContext";
 import {
   fetchVaults,

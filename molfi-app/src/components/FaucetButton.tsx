@@ -3,8 +3,8 @@ import { Droplets, Loader2 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/context/WalletContext";
-import { faucet, musdcBalance } from "@/lib/stellar/soroban";
-import { MUSDC_UNIT } from "@/lib/stellar/contracts";
+import { faucet, musdcBalance } from "@/lib/hsk/evm";
+import { MUSDC_UNIT } from "@/lib/hsk/contracts";
 import { showError, showTxSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 

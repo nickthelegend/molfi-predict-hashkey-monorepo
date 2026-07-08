@@ -1,7 +1,7 @@
 /**
  * HashKey Chain (EVM) wagmi + viem configuration.
  *
- * Replaces the former Stellar Wallets Kit stack. Defines the HashKey chain and
+ * HashKey chain + wallet (wagmi/viem) config. Defines the HashKey chain and
  * a wagmi config with an injected/MetaMask connector. "Connect Wallet" uses
  * these to connect MetaMask and prompt add/switch to HashKey Chain.
  */

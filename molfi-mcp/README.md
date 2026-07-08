@@ -1,9 +1,8 @@
 # molfi-mcp — Molfi agentic MCP server (HashKey Chain)
 
 An MCP server that lets an LLM agent trade **private prediction markets on HashKey
-Chain** — the HashKey/EVM successor to the reference Stellar molfi MCP. It wraps the
-[`molfi-predict-sdk`](../molfi-predict-sdk) `MolfiAgent` and drives the deployed
-Molfi contracts with real transactions.
+Chain**. It wraps the [`molfi-predict-sdk`](../molfi-predict-sdk) `MolfiAgent` and
+drives the deployed Molfi contracts with real transactions.
 
 ## Tools
 

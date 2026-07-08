@@ -52,7 +52,7 @@ const STEPS: readonly WelcomeStep[] = [
     bullets: [
       "Real on-chain markets on HashKey Chain testnet — bet with test mUSDC",
       "Bet YES or NO on where crypto prices finish at expiry",
-      "Settled on-chain by the Reflector oracle · bet privately with ZK",
+      "Settled on-chain by the oracle oracle · bet privately with ZK",
     ],
   },
   {

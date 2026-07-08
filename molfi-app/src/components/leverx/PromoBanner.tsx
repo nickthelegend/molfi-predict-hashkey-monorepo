@@ -21,7 +21,7 @@ export function PromoBanner({ className }: { className?: string; }) {
           </span>
           <h2 className="overflow-season-title">Bet privately, on-chain</h2>
           <p className="overflow-season-desc">
-            Trade YES/NO on real crypto markets — settled by the Reflector oracle, your side hidden with zero-knowledge.
+            Trade YES/NO on real crypto markets — settled by the oracle oracle, your side hidden with zero-knowledge.
           </p>
         </div>
         <Link to="/markets" className="overflow-season-cta">

@@ -9,7 +9,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const appRoot = path.dirname(fileURLToPath(import.meta.url));
-// The app migrated from Sui/Stellar to HashKey Chain (EVM). A few legacy LeverX
+// The app migrated from Sui/HashKey to HashKey Chain (EVM). A few legacy LeverX
 // Sui trading modules still reference `@mysten/*`, but are not part of the
 // HashKey market/bet flow, so those specifiers resolve to an inert local shim.
 const mystenShim = path.resolve(appRoot, "src/lib/sui/mysten-shim.ts");

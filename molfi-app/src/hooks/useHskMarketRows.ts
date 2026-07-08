@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { useStellarMarkets } from "@/hooks/useStellarMarkets";
-import { stellarMarketToRow } from "@/lib/stellar/market-adapter";
-import { MARKET_STATUS } from "@/lib/stellar/contracts";
+import { useHskMarkets } from "@/hooks/useHskMarkets";
+import { hskMarketToRow } from "@/lib/hsk/market-adapter";
+import { MARKET_STATUS } from "@/lib/hsk/contracts";
 import type { LeverxMarketRow } from "@/lib/leverx/indexer-markets";
 import type { MarketCategory } from "@/lib/leverx/predict-oracle-markets";
 
@@ -9,16 +9,16 @@ const isClosed = (r: LeverxMarketRow) => r.onchainStatus === MARKET_STATUS.RESOL
 
 /**
  * Drop-in replacement for `useMergedMarkets`, sourced from the Molfi `market`
- * Soroban contract instead of the Sui indexer. Returns the same shape so the
+ * HashKey contract instead of the Sui indexer. Returns the same shape so the
  * rich LeverX Markets grid/table render unchanged.
  */
-export function useStellarMarketRows(args: {
+export function useHskMarketRows(args: {
   category: MarketCategory;
   search?: string;
 }) {
-  const { data = [], isLoading, isError } = useStellarMarkets();
+  const { data = [], isLoading, isError } = useHskMarkets();
 
-  const allRows = useMemo(() => data.map(stellarMarketToRow), [data]);
+  const allRows = useMemo(() => data.map(hskMarketToRow), [data]);
 
   const categoryCounts = useMemo(
     () => ({

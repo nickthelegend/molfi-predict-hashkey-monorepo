@@ -4,7 +4,7 @@
  *
  * An LLM agent uses these tools to spin up a wallet, fund itself, and place
  * REAL on-chain bets (standard, ZK-gated, or HSP-paid) against the deployed
- * Molfi contracts — the HashKey/EVM successor to the old Stellar molfi MCP.
+ * Molfi contracts on HashKey Chain.
  *
  * Env:
  *   MOLFI_NETWORK      testnet (default) | mainnet

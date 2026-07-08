@@ -26,8 +26,8 @@ import {
   escrowPool,
   confidentialCommit,
   confidentialClaim,
-} from "@/lib/stellar/soroban";
-import { CONTRACTS, MUSDC_UNIT, OUTCOME, contractUrl, txUrl } from "@/lib/stellar/contracts";
+} from "@/lib/hsk/evm";
+import { CONTRACTS, MUSDC_UNIT, OUTCOME, contractUrl, txUrl } from "@/lib/hsk/contracts";
 import {
   fetchBackendMarket,
   fetchBackendOrderbook,
@@ -440,7 +440,7 @@ function BackendDetail({ id }: { id: string }) {
 
 // ---------------------------------------------------------------------------
 // On-chain HashKey market (hex id) — the premium terminal, wired to the
-// predict-escrow contract + Reflector oracle. Real mUSDC escrow.
+// predict-escrow contract + oracle oracle. Real mUSDC escrow.
 // ---------------------------------------------------------------------------
 
 /** YES order book — indicative depth around the live odds, plus the REAL
@@ -906,7 +906,7 @@ function OnChainDetail({ id }: { id: string }) {
             <AssetBadge asset={m.symbol} iconUrl={m.icon} size="md" />
             <div className="min-w-0 flex-1">
               <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold text-accent">
-                ⛓️ On-chain · 🔒 ZK-verified · Reflector-settled
+                ⛓️ On-chain · 🔒 ZK-verified · oracle-settled
               </span>
               <h1 className={tradeTerminalTitle}>{m.question}</h1>
               <Link to="/markets" className={tradeTerminalBack}>
@@ -934,7 +934,7 @@ function OnChainDetail({ id }: { id: string }) {
               <StatItem label={`${m.symbol} spot`} value={fmtUsd(m.spot, m.symbol)} />
               <StatItem label="Strike" value={fmtUsd(m.strike, m.symbol)} />
               <StatItem label="YES odds" value={`${yesPct}%`} />
-              <StatItem label="Oracle" value="Reflector" />
+              <StatItem label="Oracle" value="oracle" />
               <StatItem
                 label="Closes"
                 value={resolved ? "Resolved" : closed ? "Settling" : fmtRemaining(remaining)}
@@ -962,7 +962,7 @@ function OnChainDetail({ id }: { id: string }) {
               userWon ? (
                 <div className="space-y-3 rounded-xl border border-border bg-card p-4">
                   <p className="text-sm">
-                    <span className="text-muted-foreground">Settled by Reflector — </span>
+                    <span className="text-muted-foreground">Settled by oracle — </span>
                     <strong className="text-[var(--long-text)]">{winLabel} wins. You won! 🎉</strong>
                   </p>
                   <Button onClick={handleRedeem} disabled={redeeming} className="w-full gap-1.5" size="lg">
@@ -972,7 +972,7 @@ function OnChainDetail({ id }: { id: string }) {
                 </div>
               ) : (
                 <div className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
-                  Settled on-chain by Reflector —{" "}
+                  Settled on-chain by oracle —{" "}
                   <strong className="text-foreground">{winLabel}</strong> wins.
                   {userBetSide && userBetSide !== winLabel
                     ? ` Your ${userBetSide} position didn't win this time — nothing to redeem.`
@@ -983,7 +983,7 @@ function OnChainDetail({ id }: { id: string }) {
               )
             ) : closed ? (
               <div className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
-                Market closed — settling from the Reflector oracle. Check back shortly to redeem.
+                Market closed — settling from the oracle oracle. Check back shortly to redeem.
               </div>
             ) : (
               <div className="space-y-3 rounded-xl border border-border bg-card p-4">
@@ -1086,7 +1086,7 @@ function OnChainDetail({ id }: { id: string }) {
                       {address ? `Bet on-chain · ${side === OUTCOME.YES ? "YES" : "NO"}` : "Connect wallet"}
                     </Button>
                     <p className="text-center text-[11px] text-muted-foreground">
-                      🔒 Each bet submits a BLS12-381 Groth16 proof verified on-chain · real mUSDC escrow · Reflector-settled
+                      🔒 Each bet submits a BLS12-381 Groth16 proof verified on-chain · real mUSDC escrow · oracle-settled
                     </p>
                   </>
                 )}
@@ -1129,7 +1129,7 @@ function OnChainDetail({ id }: { id: string }) {
   );
 }
 
-export function StellarMarketDetail({ oracleId }: { oracleId: string }) {
+export function HskMarketDetail({ oracleId }: { oracleId: string }) {
   if (isBackendMarketId(oracleId)) return <BackendDetail id={oracleId} />;
   if (HEX64.test(oracleId)) return <OnChainDetail id={oracleId} />;
 

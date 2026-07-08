@@ -1,7 +1,7 @@
 /**
  * Polymarket Gamma API — public, no-auth, CORS-open. Used to pull live
  * real-world reference markets (sports, politics, …) to show alongside Molfi's
- * on-chain Stellar markets. Docs: https://docs.polymarket.com/developers/gamma-markets-api/overview
+ * on-chain HashKey markets. Docs: https://docs.polymarket.com/developers/gamma-markets-api/overview
  */
 const GAMMA_BASE = "https://gamma-api.polymarket.com";
 

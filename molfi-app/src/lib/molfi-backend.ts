@@ -408,7 +408,7 @@ export async function fetchOnChainMarkets(
   return r.json();
 }
 
-/** Map an on-chain (predict-escrow + Reflector) market into the rich grid row. */
+/** Map an on-chain (predict-escrow + oracle) market into the rich grid row. */
 export function onChainMarketToRow(m: OnChainMarketRef): LeverxMarketRow {
   return {
     id: m.marketId,

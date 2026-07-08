@@ -168,7 +168,7 @@ function MarketsPage() {
         <p className="flex items-center gap-1.5 rounded-lg border border-border bg-card/60 px-3 py-2 text-xs text-muted-foreground">
           <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-accent" />
           Real on-chain markets — your stake is escrowed as mUSDC in the predict-escrow contract and
-          settled by the live Reflector oracle. Bets are transparent on-chain; the order-book depth is indicative.
+          settled by the live oracle oracle. Bets are transparent on-chain; the order-book depth is indicative.
         </p>
       ) : null}
 

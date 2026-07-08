@@ -6,7 +6,7 @@
  * MockUSDC / Market / PredictEscrow / ConfidentialBet contracts and the ZK /
  * confidential backend endpoints.
  *
- * Replaces the former Soroban service; page-facing helpers keep familiar names.
+ * EVM contract service (ethers); page-facing helpers keep familiar names.
  */
 import { Contract, JsonRpcProvider, type Signer } from "ethers";
 import { API_URL, CONTRACTS, DENOM, RPC_URL } from "@/config/molfi";

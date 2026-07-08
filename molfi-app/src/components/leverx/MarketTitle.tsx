@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 type Props = {
   /** Defaults to up — catalog and trade pages always show "Bitcoin Up". */
   side?: PredictSide;
-  /** Explicit market question (Stellar markets); falls back to the static title. */
+  /** Explicit market question (HashKey markets); falls back to the static title. */
   title?: string;
   className?: string;
 };
