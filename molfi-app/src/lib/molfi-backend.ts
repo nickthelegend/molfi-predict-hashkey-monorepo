@@ -410,16 +410,20 @@ export async function fetchOnChainMarkets(
 
 /** Map an on-chain (predict-escrow + oracle) market into the rich grid row. */
 export function onChainMarketToRow(m: OnChainMarketRef): LeverxMarketRow {
+  const strikeUsd = m.strike ?? 0;
   return {
     id: m.marketId,
     oracleId: m.marketId,
     asset: m.symbol,
-    strike: m.strike ?? 0,
-    strikeRaw: 0,
+    strike: strikeUsd,
+    // The cards read `strikeRaw / 1e9` for the strike price, so scale USD by 1e9.
+    strikeRaw: strikeUsd > 0 ? Math.round(strikeUsd * 1e9) : 0,
     higherStrikeRaw: 0,
     expiry: m.closeTs,
     isUp: true,
     isRange: false,
+    // Live oracle spot (USD) → the card's "Current price".
+    spotPrice: m.spot ?? null,
     lastAskPremium: m.yesPrice != null ? m.yesPrice * 100 : null,
     quotePaused: false,
     volume: m.oi ?? 0,

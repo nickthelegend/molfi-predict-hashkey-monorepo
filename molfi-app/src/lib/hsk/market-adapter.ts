@@ -27,12 +27,11 @@ function assetFromQuestion(question: string): string {
 export function hskMarketToRow(m: OnChainMarket): LeverxMarketRow {
   return {
     id: m.id,
-    // Unique per market (the grid + hero dedupe on oracleId). `strikeRaw: 0`
-    // below is what disables the Sui ask query, so this stays browser-safe.
     oracleId: m.id,
-    asset: assetFromQuestion(m.question),
-    strike: 0,
-    strikeRaw: 0,
+    asset: m.symbol ?? assetFromQuestion(m.question),
+    // Strike in USD → the card reads `strikeRaw / 1e9`, so scale by 1e9.
+    strike: m.strikeUsd ?? 0,
+    strikeRaw: m.strikeUsd && m.strikeUsd > 0 ? Math.round(m.strikeUsd * 1e9) : 0,
     higherStrikeRaw: 0,
     expiry: m.closeTs * 1000,
     isUp: true,
@@ -40,6 +39,9 @@ export function hskMarketToRow(m: OnChainMarket): LeverxMarketRow {
     lastAskPremium: null,
     quotePaused: false,
     volume: 0,
+    // Live oracle spot (USD) from the backend engine → the card's "Current price".
+    spotPrice: m.spot ?? null,
+    iconUrl: m.iconUrl,
     status: m.status === MARKET_STATUS.RESOLVED ? "resolved" : "active",
     question: m.question,
     onchainStatus: m.status,

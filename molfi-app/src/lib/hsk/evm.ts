@@ -72,13 +72,59 @@ async function sendAndWait(txPromise: Promise<{ hash: string; wait: () => Promis
 export interface OnChainMarket {
   id: string; // hex (0x…)
   question: string;
-  closeTs: number;
+  closeTs: number; // seconds
   status: number; // 0 Trading, 1 Resolving, 2 Resolved
   outcome: number; // 0 YES, 1 NO, 2 INVALID
+  // Enrichment from the backend market engine (undefined for pure on-chain reads).
+  strikeUsd?: number | null; // the market's strike in USD
+  spot?: number | null; // live spot price in USD
+  yesPrice?: number | null; // implied YES probability 0..1
+  symbol?: string; // e.g. BTC
+  iconUrl?: string; // token icon
 }
 
-/** Enumerate all markets and fetch each one's state. */
+const API_URL: string =
+  (import.meta.env.VITE_MOLFI_API_URL as string | undefined) || "http://localhost:4000";
+
+interface BackendMarket {
+  marketId: string; question: string; closeTs: number; resolved: boolean;
+  outcome: number | null; strike: number | null; spot: number | null;
+  yesPrice: number | null; symbol: string; icon: string;
+}
+function backendToMarket(r: BackendMarket): OnChainMarket {
+  return {
+    id: r.marketId,
+    question: r.question,
+    closeTs: Math.floor((r.closeTs ?? 0) / 1000), // backend ms → seconds
+    status: r.resolved ? 2 : 0,
+    outcome: r.outcome ?? 2,
+    strikeUsd: r.strike ?? null,
+    spot: r.spot ?? null,
+    yesPrice: r.yesPrice ?? null,
+    symbol: r.symbol,
+    iconUrl: r.icon,
+  };
+}
+
+/**
+ * Live markets for the UI. Prefers the backend market engine (rich strike/spot/
+ * odds + curated open+resolved set); falls back to raw on-chain enumeration when
+ * the backend is unreachable.
+ */
 export async function listMarkets(): Promise<OnChainMarket[]> {
+  try {
+    const [open, closed] = await Promise.all([
+      fetch(`${API_URL}/api/onchain/markets`).then((r) => r.json()),
+      fetch(`${API_URL}/api/onchain/markets?status=closed`).then((r) => r.json()).catch(() => []),
+    ]);
+    const rows: BackendMarket[] = [
+      ...(Array.isArray(open) ? open : []),
+      ...(Array.isArray(closed) ? closed : []),
+    ];
+    if (rows.length) return rows.map(backendToMarket);
+  } catch {
+    /* backend down — fall back to on-chain */
+  }
   const market = readContract(CONTRACTS.market, ABIS.market);
   const ids = (await market.markets()) as string[];
   const out: OnChainMarket[] = [];
