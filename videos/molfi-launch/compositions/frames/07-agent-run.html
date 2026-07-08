@@ -1,0 +1,521 @@
+<template data-composition-id="07-agent-run">
+  <style>
+    /* ---- fonts (files ship in assets/fonts/) ---- */
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/jbmono-400.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: block;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/jbmono-500.woff2") format("woff2");
+      font-weight: 500; font-style: normal; font-display: block;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/jbmono-700.woff2") format("woff2");
+      font-weight: 700; font-style: normal; font-display: block;
+    }
+    @font-face {
+      font-family: "Barlow";
+      src: url("assets/fonts/barlow-400.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: block;
+    }
+    @font-face {
+      font-family: "Barlow";
+      src: url("assets/fonts/barlow-600.woff2") format("woff2");
+      font-weight: 600; font-style: normal; font-display: block;
+    }
+    @font-face {
+      font-family: "Barlow";
+      src: url("assets/fonts/barlow-700.woff2") format("woff2");
+      font-weight: 700; font-style: normal; font-display: block;
+    }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #0e0e0e;
+      font-family: "Barlow", sans-serif;
+    }
+
+    /* ---- full-bleed ground (a clip, NOT #root) ---- */
+    #ag-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(1200px 720px at 50% 40%, rgba(200,153,255,0.10), rgba(200,153,255,0) 70%),
+        #0e0e0e;
+    }
+    #ag-bg::after {
+      /* faint dot grid for depth */
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.045) 1.4px, transparent 1.5px);
+      background-size: 46px 46px;
+      opacity: 0.5;
+      mask-image: radial-gradient(1100px 640px at 50% 44%, #000 30%, transparent 78%);
+      -webkit-mask-image: radial-gradient(1100px 640px at 50% 44%, #000 30%, transparent 78%);
+    }
+
+    /* ---- camera (wraps the whole stage; steady push + drift) ---- */
+    #ag-camera {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    /* ---- terminal hero window ---- */
+    #ag-terminal {
+      position: relative;
+      width: 1180px;
+      /* anchored so the whole window sits above the ~895px caption keep-out */
+      margin-top: -34px;
+      border-radius: 16px;
+      background: #141414;
+      border: 1.5px solid rgba(255,255,255,0.10);
+      box-shadow:
+        0 40px 120px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(200,153,255,0.05) inset;
+      overflow: hidden;
+      will-change: transform, opacity;
+    }
+    #ag-glowring {
+      position: absolute;
+      inset: -2px;
+      border-radius: 18px;
+      pointer-events: none;
+      box-shadow: 0 0 0 1.5px rgba(200,153,255,0.0);
+      opacity: 0;
+    }
+
+    /* title bar */
+    #ag-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 58px;
+      padding: 0 22px;
+      background: #191919;
+      border-bottom: 1.5px solid rgba(255,255,255,0.08);
+    }
+    .ag-dot {
+      width: 13px; height: 13px; border-radius: 50%;
+      display: inline-block;
+    }
+    .ag-dot.r { background: #f87171; }
+    .ag-dot.y { background: #e8c15a; }
+    .ag-dot.g { background: #34d399; }
+    #ag-dots { display: flex; gap: 9px; align-items: center; }
+    #ag-title {
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 500;
+      font-size: 19px;
+      letter-spacing: 0.02em;
+      color: #ababab;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    #ag-title .fadeon { color: #c899ff; }
+    #ag-title .sep { color: #4a4a4a; }
+    #ag-titledot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #34d399; display: inline-block;
+      box-shadow: 0 0 10px rgba(52,211,153,0.6);
+    }
+    #ag-titledot-label {
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 400;
+      font-size: 14px;
+      color: #6f6f6f;
+      margin-left: auto;
+      letter-spacing: 0.04em;
+    }
+
+    /* body */
+    #ag-body {
+      padding: 30px 34px 34px 34px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 25px;
+      line-height: 1.62;
+      color: #e6e6e6;
+      min-height: 470px;
+    }
+
+    .ag-line {
+      display: flex;
+      align-items: baseline;
+      white-space: nowrap;
+      margin-bottom: 12px;
+      will-change: transform, opacity;
+    }
+    .ag-prompt {
+      color: #c899ff;
+      font-weight: 700;
+      margin-right: 14px;
+      flex: 0 0 auto;
+    }
+    .ag-cmd { color: #f2f2f2; font-weight: 500; }
+    .ag-typed { color: #f2f2f2; }
+    .ag-check { color: #34d399; font-weight: 700; margin-left: 4px; }
+    .ag-meta { color: #8a8a8a; font-weight: 400; }
+    .ag-addr { color: #c899ff; font-weight: 500; }
+    .ag-plus { color: #34d399; font-weight: 500; }
+
+    /* right-edge tx-hash flick chips */
+    .ag-tx {
+      margin-left: auto;
+      padding-left: 26px;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 400;
+      font-size: 16px;
+      letter-spacing: 0.03em;
+      color: #6b6b6b;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      flex: 0 0 auto;
+      will-change: transform, opacity;
+    }
+    .ag-tx .tick { color: #34d399; }
+
+    /* the bet_zk line — the purple glow hero line */
+    #ag-l3 {
+      position: relative;
+      border-radius: 8px;
+      padding: 6px 12px;
+      margin-left: -12px;
+      margin-right: -12px;
+      margin-bottom: 12px;
+    }
+    #ag-l3 .ag-cmd { color: #d7b6ff; }
+    #ag-l3glow {
+      color: #c899ff !important;
+      will-change: transform, text-shadow;
+      display: inline-block;
+      transform-origin: 0% 50%;
+    }
+    #ag-l3 .ag-zkmeta {
+      color: #b98fff;
+      font-weight: 400;
+    }
+    #ag-l3bg {
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      background: rgba(200,153,255,0.08);
+      border: 1px solid rgba(200,153,255,0.22);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* the redeem line — green payout hero */
+    #ag-l5 .ag-cmd { color: #f2f2f2; }
+    #ag-l5 .ag-plus {
+      color: #34d399;
+      font-weight: 700;
+      text-shadow: 0 0 18px rgba(52,211,153,0.0);
+      will-change: text-shadow, transform;
+      display: inline-block;
+    }
+
+    /* blinking caret at the current input row */
+    #ag-caret-row {
+      display: flex;
+      align-items: baseline;
+      margin-top: 4px;
+    }
+    #ag-caret {
+      display: inline-block;
+      width: 13px;
+      height: 26px;
+      background: #c899ff;
+      margin-left: 2px;
+      transform: translateY(3px);
+    }
+
+    /* "no human" quiet stamp under the terminal */
+    #ag-nohuman {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 800px;
+      justify-content: center;
+      font-family: "Barlow", sans-serif;
+      font-weight: 600;
+      font-size: 26px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #8f8f8f;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+    #ag-nohuman .key {
+      color: #c899ff;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+    #ag-nohuman .rule {
+      width: 40px; height: 1.5px;
+      background: rgba(200,153,255,0.5);
+      display: inline-block;
+    }
+  </style>
+
+  <div id="root" data-composition-id="07-agent-run" data-duration="12.245" data-width="1920" data-height="1080">
+
+    <div id="ag-bg" class="clip" data-start="0" data-duration="12.245" data-track-index="0"></div>
+
+    <div id="ag-camera" class="clip" data-start="0" data-duration="12.245" data-track-index="1">
+
+      <div id="ag-terminal">
+        <div id="ag-glowring"></div>
+
+        <div id="ag-titlebar">
+          <div id="ag-dots">
+            <span class="ag-dot r"></span>
+            <span class="ag-dot y"></span>
+            <span class="ag-dot g"></span>
+          </div>
+          <div id="ag-title">
+            <span class="fadeon">molfi-agent</span>
+            <span class="sep">·</span>
+            <span>SKILL.md</span>
+          </div>
+          <div id="ag-titledot-label"><span id="ag-titledot"></span>&nbsp;&nbsp;running</div>
+        </div>
+
+        <div id="ag-body">
+          <!-- line 0: reads the skill file -->
+          <div class="ag-line" id="ag-l0">
+            <span class="ag-prompt">$</span><span class="ag-typed" id="ag-t0"></span>
+          </div>
+
+          <!-- line 1: create wallet -->
+          <div class="ag-line" id="ag-l1">
+            <span class="ag-prompt">→</span>
+            <span class="ag-cmd">create wallet</span>
+            <span class="ag-check">&nbsp;✓</span>
+            <span class="ag-addr">&nbsp;&nbsp;GD7Z…IH7MJ</span>
+            <span class="ag-tx" id="ag-tx1"><span class="tick">✓</span>0e9bca76…</span>
+          </div>
+
+          <!-- line 2: faucet -->
+          <div class="ag-line" id="ag-l2">
+            <span class="ag-prompt">→</span>
+            <span class="ag-cmd">faucet mUSDC</span>
+            <span class="ag-check">&nbsp;✓</span>
+            <span class="ag-plus">&nbsp;&nbsp;+10,000</span>
+            <span class="ag-tx" id="ag-tx2"><span class="tick">✓</span>a3f0c1e5…</span>
+          </div>
+
+          <!-- line 3: bet_zk — GLOWS purple -->
+          <div class="ag-line" id="ag-l3">
+            <span id="ag-l3bg"></span>
+            <span class="ag-prompt">→</span>
+            <span class="ag-cmd" id="ag-l3glow">bet_zk</span>
+            <span class="ag-check">&nbsp;✓</span>
+            <span class="ag-zkmeta">&nbsp;&nbsp;proof verified on-chain · nullifier burned</span>
+            <span class="ag-tx" id="ag-tx3"><span class="tick">✓</span>d1eb6e7c…</span>
+          </div>
+
+          <!-- line 4: resolve -->
+          <div class="ag-line" id="ag-l4">
+            <span class="ag-prompt">→</span>
+            <span class="ag-cmd">resolve</span>
+            <span class="ag-check">&nbsp;✓</span>
+            <span class="ag-tx" id="ag-tx4"><span class="tick">✓</span>4c72ab90…</span>
+          </div>
+
+          <!-- line 5: redeem — GREEN payout -->
+          <div class="ag-line" id="ag-l5">
+            <span class="ag-prompt">→</span>
+            <span class="ag-cmd">redeem</span>
+            <span class="ag-plus">&nbsp;&nbsp;+96 mUSDC</span>
+            <span class="ag-check">&nbsp;✓</span>
+            <span class="ag-tx" id="ag-tx5"><span class="tick">✓</span>09f89119…</span>
+          </div>
+
+          <!-- live caret waiting -->
+          <div id="ag-caret-row">
+            <span class="ag-prompt" style="color:#c899ff;font-weight:700;margin-right:14px;">→</span><span id="ag-caret"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="ag-nohuman">
+        <span class="rule"></span>
+        <span>No human touched a <span class="key">key</span></span>
+        <span class="rule"></span>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    window.__timelines = window.__timelines || {};
+    (function () {
+      var DUR = 12.245;
+      var tl = gsap.timeline({ paused: true });
+
+      /* ============ CAMERA — steady push + organic drift ============ */
+      var camera = document.getElementById("ag-camera");
+      var phase = { scale: 1.0 };
+      // Phase 2 — settle to a touch tighter as the run begins
+      tl.to(phase, { scale: 1.025, duration: 2.2, ease: "power2.out" }, 1.4);
+      // Phase 3 — slow continuous push through the climax
+      tl.to(phase, { scale: 1.055, duration: 6.6, ease: "power2.inOut" }, 5.0);
+
+      var drift = { p: 0 };
+      tl.to(drift, {
+        p: Math.PI * 2 * 1.4,
+        duration: DUR,
+        ease: "none",
+        onUpdate: function () {
+          var dx = Math.sin(drift.p) * 5;
+          var dy = Math.sin(drift.p * 1.3) * 2.5;
+          camera.style.transform = "scale(" + phase.scale + ") translate(" + dx + "px, " + dy + "px)";
+        }
+      }, 0);
+
+      /* ============ TERMINAL establishes ============ */
+      tl.fromTo("#ag-terminal",
+        { opacity: 0, y: 46, scale: 0.965 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.85, ease: "power3.out" }, 0.15);
+      tl.fromTo("#ag-title .fadeon",
+        { opacity: 0.25 },
+        { opacity: 1, duration: 0.5, ease: "power2.out" }, 0.55);
+
+      /* ============ LINE 0 — reads the skill file (type-on) ============ */
+      // Sits hidden until it types; a per-char driver reveals the command.
+      var t0El = document.getElementById("ag-t0");
+      var CMD0 = "read SKILL.md";
+      gsap.set(t0El, { opacity: 1 });
+      var l0 = { n: 0 };
+      // hold empty until cue, then type
+      tl.to(l0, {
+        n: CMD0.length,
+        duration: 0.7,
+        ease: "none",
+        onUpdate: function () {
+          t0El.textContent = CMD0.substring(0, Math.round(l0.n));
+        }
+      }, 0.75);
+
+      /* helper: reveal a whole line (slide-up + fade) at time `at` */
+      function revealLine(sel, at) {
+        tl.fromTo(sel,
+          { opacity: 0, y: 14 },
+          { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, at);
+      }
+      /* helper: flick a tx hash in at the right edge slightly after its line */
+      function flickTx(sel, at) {
+        tl.fromTo(sel,
+          { opacity: 0, x: 26 },
+          { opacity: 1, x: 0, duration: 0.34, ease: "power2.out" }, at);
+      }
+
+      // lines start hidden (fromTo handles the reveal; before `at` HF holds start state)
+      // Paced across the full run — weighted toward the back half, never front-loaded.
+
+      /* Line 1 — "funds a wallet" */
+      revealLine("#ag-l1", 1.65);
+      flickTx("#ag-tx1", 1.95);
+
+      /* Line 2 — faucet */
+      revealLine("#ag-l2", 3.30);
+      flickTx("#ag-tx2", 3.60);
+
+      /* Line 3 — bet_zk (the ZK bet beat) */
+      revealLine("#ag-l3", 4.95);
+      flickTx("#ag-tx3", 5.35);
+      // purple block bloom under the line
+      tl.fromTo("#ag-l3bg",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5, ease: "power2.out" }, 5.05);
+      // the glow-ring on the whole terminal pulses once as the proof verifies
+      tl.fromTo("#ag-glowring",
+        { opacity: 0, boxShadow: "0 0 0 1.5px rgba(200,153,255,0.0)" },
+        { opacity: 1, boxShadow: "0 0 42px 2px rgba(200,153,255,0.28)", duration: 0.6, ease: "power2.out" }, 5.05);
+      tl.to("#ag-glowring",
+        { opacity: 0.35, boxShadow: "0 0 20px 1px rgba(200,153,255,0.12)", duration: 1.4, ease: "power2.inOut" }, 5.65);
+
+      /* Line 4 — resolve ("settles it") */
+      revealLine("#ag-l4", 7.35);
+      flickTx("#ag-tx4", 7.65);
+
+      /* Line 5 — redeem +96 mUSDC (green, "redeems the winnings") */
+      revealLine("#ag-l5", 8.75);
+      flickTx("#ag-tx5", 9.15);
+      // green payout glows on as it lands
+      tl.fromTo("#ag-l5 .ag-plus",
+        { textShadow: "0 0 18px rgba(52,211,153,0.0)", scale: 1 },
+        { textShadow: "0 0 22px rgba(52,211,153,0.55)", scale: 1.06, duration: 0.4, ease: "power2.out" }, 8.95);
+      tl.to("#ag-l5 .ag-plus",
+        { textShadow: "0 0 14px rgba(52,211,153,0.28)", scale: 1, duration: 1.0, ease: "power2.inOut" }, 9.35);
+
+      /* ============ ASR-style purple glow envelope on bet_zk ============ */
+      // Sustains through the ZK beat, then rests subtly (breadcrumb).
+      var glowEl = document.getElementById("ag-l3glow");
+      var GSTART = 5.05, GPEAK = 5.30, GEND = 6.35, GREL = 0.9, GREST = 0.32;
+      function env(t) {
+        if (t < GSTART) return 0;
+        if (t < GPEAK) return (t - GSTART) / (GPEAK - GSTART);
+        if (t < GEND) return 1;
+        if (t < GEND + GREL) return 1 - ((t - GEND) / GREL) * (1 - GREST);
+        return GREST;
+      }
+      var gdrv = { t: 0 };
+      tl.to(gdrv, {
+        t: DUR,
+        duration: DUR,
+        ease: "none",
+        onUpdate: function () {
+          var e = env(gdrv.t);
+          var blur = 34 * e;
+          var sc = 1 + 0.10 * e;
+          glowEl.style.textShadow = "0 0 " + blur + "px rgba(200,153,255," + (0.15 + e * 0.7) + ")";
+          glowEl.style.transform = "scale(" + sc + ")";
+        }
+      }, 0);
+
+      /* ============ caret blink (deterministic sin) ============ */
+      var caret = document.getElementById("ag-caret");
+      var titledot = document.getElementById("ag-titledot");
+      var blink = { p: 0 };
+      var CYCLES = Math.round(DUR / 0.62); // ~natural cursor cadence
+      tl.to(blink, {
+        p: Math.PI * 2 * CYCLES,
+        duration: DUR,
+        ease: "none",
+        onUpdate: function () {
+          caret.style.opacity = Math.sin(blink.p) > 0 ? "1" : "0";
+          // running status dot breathes softly
+          titledot.style.opacity = (0.55 + 0.45 * (0.5 + 0.5 * Math.sin(blink.p * 0.5))).toFixed(3);
+        }
+      }, 0);
+
+      /* ============ "No human touched a key" — quiet climax stamp ============ */
+      tl.fromTo("#ag-nohuman",
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 10.35);
+      // hold to the end — NO exit (not the final frame)
+
+      window.__timelines["07-agent-run"] = tl;
+    })();
+  </script>
+</template>

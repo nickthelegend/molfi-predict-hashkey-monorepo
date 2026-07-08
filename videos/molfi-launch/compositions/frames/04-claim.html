@@ -1,0 +1,753 @@
+<template>
+  <div id="root" data-composition-id="04-claim" data-duration="7.403" data-width="1920" data-height="1080">
+    <!-- ============ styles (inside template — transport rule) ============ -->
+    <style>
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-600.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-700.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-800.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-500.woff2") format("woff2");
+        font-weight: 500;
+        font-style: normal;
+        font-display: block;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        font-family: "Barlow", sans-serif;
+        background: transparent;
+      }
+
+      /* full-bleed ground on a clip layer, never on #root */
+      #c04-bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            1200px 760px at 62% 44%,
+            rgba(200, 153, 255, 0.06),
+            rgba(14, 14, 14, 0) 62%
+          ),
+          #0e0e0e;
+      }
+
+      /* faint dot grid for depth */
+      #c04-grid {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1.5px, transparent 1.6px);
+        background-size: 46px 46px;
+        opacity: 0;
+      }
+
+      /* ---------- stage that holds card + proof rail ---------- */
+      .c04-stage {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 196px;
+        height: 560px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 96px;
+      }
+
+      /* eyebrow above the whole scene */
+      #c04-eyebrow {
+        position: absolute;
+        top: 118px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 21px;
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+        color: #c899ff;
+        opacity: 0;
+      }
+
+      /* ============ the claim card ============ */
+      #c04-card {
+        position: relative;
+        width: 560px;
+        padding: 40px 42px 44px;
+        background: #191919;
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        opacity: 0;
+        transform-origin: 50% 50%;
+        will-change: transform, opacity;
+      }
+      .c04-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 26px;
+      }
+      .c04-card-title {
+        font-family: "Barlow", sans-serif;
+        font-weight: 700;
+        font-size: 30px;
+        letter-spacing: -0.01em;
+        color: #ffffff;
+      }
+      .c04-resolved {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 15px;
+        border-radius: 100px;
+        background: rgba(52, 211, 153, 0.12);
+        border: 1px solid rgba(52, 211, 153, 0.32);
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.02em;
+        color: #34d399;
+      }
+      .c04-resolved .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #34d399;
+      }
+
+      /* hidden-side commitment strip inside the card */
+      .c04-commit {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 20px;
+        border-radius: 12px;
+        background: rgba(200, 153, 255, 0.08);
+        border: 1px solid rgba(200, 153, 255, 0.24);
+        margin-bottom: 30px;
+      }
+      .c04-lock {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 auto;
+        border-radius: 10px;
+        background: rgba(200, 153, 255, 0.14);
+        display: grid;
+        place-items: center;
+      }
+      .c04-commit-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .c04-commit-label {
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 0.02em;
+        color: #ababab;
+      }
+      .c04-commit-hash {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 500;
+        font-size: 17px;
+        letter-spacing: 0.01em;
+        color: #c899ff;
+      }
+
+      /* the Claim button */
+      #c04-claim-wrap {
+        position: relative;
+        display: grid;
+        place-items: center;
+      }
+      #c04-burst {
+        position: absolute;
+        z-index: 1;
+        /* center via inset+margin (no CSS transform — GSAP tweens scale here) */
+        inset: 0;
+        margin: auto;
+        width: 476px;
+        height: 78px;
+        transform-origin: 50% 50%;
+        background: radial-gradient(
+          closest-side,
+          rgba(154, 107, 255, 0.9),
+          rgba(154, 107, 255, 0) 70%
+        );
+        filter: blur(46px);
+        opacity: 0;
+        pointer-events: none;
+      }
+      #c04-claim {
+        position: relative;
+        z-index: 2;
+        width: 476px;
+        height: 78px;
+        border: none;
+        border-radius: 100px;
+        background: #c899ff;
+        color: #0e0e0e;
+        font-family: "Barlow", sans-serif;
+        font-weight: 800;
+        font-size: 27px;
+        letter-spacing: 0.04em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+
+      /* animated cursor */
+      #c04-cursor {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 40;
+        width: 40px;
+        height: 40px;
+        opacity: 0;
+        pointer-events: none;
+        will-change: transform;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
+      }
+
+      /* ============ the ZK proof rail (right side) ============ */
+      #c04-rail {
+        position: relative;
+        width: 560px;
+        height: 470px;
+      }
+
+      /* proof glyph — starts at the card edge, travels into the verifier */
+      #c04-proof {
+        position: absolute;
+        left: -108px;
+        top: 96px;
+        z-index: 20;
+        width: 132px;
+        height: 132px;
+        border-radius: 20px;
+        background: linear-gradient(150deg, #1f1f1f, #191919);
+        border: 1.5px solid rgba(200, 153, 255, 0.5);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      #c04-proof .glyph {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 500;
+        font-size: 42px;
+        line-height: 1;
+        color: #c899ff;
+      }
+      #c04-proof .cap {
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #ababab;
+      }
+
+      /* verifier block — receives the proof */
+      #c04-verifier {
+        position: absolute;
+        left: 74px;
+        top: 40px;
+        width: 412px;
+        height: 244px;
+        border-radius: 18px;
+        background: #191919;
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      #c04-verifier .v-label {
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: #717680;
+      }
+      #c04-check {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: rgba(52, 211, 153, 0.12);
+        border: 1.6px solid rgba(52, 211, 153, 0.4);
+        display: grid;
+        place-items: center;
+        transform-origin: 50% 50%;
+        transform: scale(0);
+        will-change: transform;
+      }
+      #c04-check svg {
+        width: 52px;
+        height: 52px;
+      }
+      #c04-check-path {
+        fill: none;
+        stroke: #34d399;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      #c04-verified {
+        font-family: "Barlow", sans-serif;
+        font-weight: 700;
+        font-size: 24px;
+        letter-spacing: 0.01em;
+        color: #34d399;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      /* nullifier mark — ignites then burns out (single-use) */
+      #c04-nullifier {
+        position: absolute;
+        left: 74px;
+        top: 312px;
+        width: 412px;
+        height: 70px;
+        border-radius: 12px;
+        background: rgba(200, 153, 255, 0.06);
+        border: 1px solid rgba(200, 153, 255, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 22px;
+        opacity: 0;
+        will-change: opacity, filter;
+      }
+      #c04-null-ember {
+        width: 15px;
+        height: 15px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: #c899ff;
+        opacity: 0;
+        will-change: transform, opacity, box-shadow;
+      }
+      .c04-null-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .c04-null-label {
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #717680;
+      }
+      .c04-null-hash {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 400;
+        font-size: 16px;
+        color: #ababab;
+      }
+      #c04-null-burned {
+        margin-left: auto;
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 0.03em;
+        color: #c899ff;
+        opacity: 0;
+      }
+
+      /* ============ payout row (Scene 3) ============ */
+      #c04-payout {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 774px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+      }
+      #c04-payout-wrap {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      #c04-payout-num {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        font-size: 76px;
+        line-height: 1;
+        letter-spacing: -0.01em;
+        color: #34d399;
+      }
+      #c04-payout-unit {
+        font-family: "Barlow", sans-serif;
+        font-weight: 700;
+        font-size: 34px;
+        color: #34d399;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      #c04-payout-div {
+        width: 1.5px;
+        height: 62px;
+        background: rgba(255, 255, 255, 0.14);
+        opacity: 0;
+        will-change: opacity;
+      }
+      #c04-private {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+      #c04-private .p-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #c899ff;
+      }
+      #c04-private .p-text {
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 25px;
+        letter-spacing: 0.01em;
+        color: #ababab;
+      }
+    </style>
+
+    <!-- ============ full-bleed ground (clip layer) ============ -->
+    <div id="c04-bg" class="clip" data-start="0" data-duration="7.403" data-track-index="0"></div>
+    <div id="c04-grid" class="clip" data-start="0" data-duration="7.403" data-track-index="1"></div>
+
+    <!-- ============ eyebrow ============ -->
+    <div id="c04-eyebrow" class="clip" data-start="0.2" data-duration="7.2" data-track-index="2">
+      Settlement · zero-knowledge claim
+    </div>
+
+    <!-- ============ stage: card + proof rail ============ -->
+    <div class="c04-stage clip" data-start="0" data-duration="7.403" data-track-index="3">
+      <!-- claim card -->
+      <div id="c04-card">
+        <div class="c04-card-top">
+          <div class="c04-card-title">Your private bet</div>
+          <div class="c04-resolved"><span class="dot"></span>Resolved</div>
+        </div>
+        <div class="c04-commit">
+          <div class="c04-lock">
+            <svg width="20" height="22" viewBox="0 0 20 22" fill="none">
+              <rect x="2.5" y="9.5" width="15" height="11" rx="2.4" stroke="#c899ff" stroke-width="1.8" />
+              <path d="M6 9.5V6.6a4 4 0 0 1 8 0v2.9" stroke="#c899ff" stroke-width="1.8" />
+            </svg>
+          </div>
+          <div class="c04-commit-meta">
+            <div class="c04-commit-label">Side hidden behind commitment</div>
+            <div class="c04-commit-hash">0x7f3a…c02e</div>
+          </div>
+        </div>
+
+        <div id="c04-claim-wrap">
+          <div id="c04-burst"></div>
+          <button id="c04-claim">Claim payout</button>
+        </div>
+      </div>
+
+      <!-- ZK proof rail -->
+      <div id="c04-rail">
+        <!-- verifier block -->
+        <div id="c04-verifier">
+          <div class="v-label">On-chain verifier</div>
+          <div id="c04-check">
+            <svg viewBox="0 0 52 52">
+              <path id="c04-check-path" d="M14 27 L23 36 L39 17" />
+            </svg>
+          </div>
+          <div id="c04-verified">Verified on-chain</div>
+        </div>
+
+        <!-- nullifier -->
+        <div id="c04-nullifier">
+          <div id="c04-null-ember"></div>
+          <div class="c04-null-text">
+            <div class="c04-null-label">Nullifier</div>
+            <div class="c04-null-hash">n:4c1e…9a</div>
+          </div>
+          <div id="c04-null-burned">burned · single-use</div>
+        </div>
+
+        <!-- traveling proof glyph (on top) -->
+        <div id="c04-proof">
+          <div class="glyph">π</div>
+          <div class="cap">proof</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- animated cursor -->
+    <svg id="c04-cursor" viewBox="0 0 24 24">
+      <path d="M5 3L19 12L12 13L9 20L5 3Z" fill="#ffffff" stroke="#0e0e0e" stroke-width="1.4" />
+    </svg>
+
+    <!-- ============ payout row ============ -->
+    <div id="c04-payout" class="clip" data-start="5.4" data-duration="2.003" data-track-index="4">
+      <div id="c04-payout-wrap">
+        <span id="c04-payout-num">+0</span>
+        <span id="c04-payout-unit">mUSDC</span>
+      </div>
+      <div id="c04-payout-div"></div>
+      <div id="c04-private">
+        <span class="p-dot"></span>
+        <span class="p-text">side never revealed</span>
+      </div>
+    </div>
+
+    <!-- ============ scripts (inside template — transport rule) ============ -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+
+        // grid presence
+        tl.to("#c04-grid", { opacity: 1, duration: 1.0, ease: "power2.out" }, 0.1);
+        // eyebrow
+        tl.fromTo(
+          "#c04-eyebrow",
+          { opacity: 0, y: -12 },
+          { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
+          0.2
+        );
+
+        // ───────────────────────── Scene 1 (0–2.5s): card + Claim press ─────────────────────────
+        // card lands (hero present by t≈0.5s)
+        tl.fromTo(
+          "#c04-card",
+          { opacity: 0, y: 30, scale: 0.97 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.66, ease: "power3.out" },
+          0.15
+        );
+
+        // cursor glides in toward the Claim button (button centroid ≈ 632, 590)
+        var CURSOR_END_X = 604;
+        var CURSOR_END_Y = 566;
+        tl.fromTo(
+          "#c04-cursor",
+          { opacity: 0, x: 470, y: 720, scale: 1.02 },
+          {
+            opacity: 1,
+            x: CURSOR_END_X,
+            y: CURSOR_END_Y,
+            scale: 1,
+            duration: 0.9,
+            ease: "power3.out",
+          },
+          0.95
+        );
+
+        // press: cursor down then up (deterministic, no yoyo)
+        tl.to("#c04-cursor", { scale: 0.82, duration: 0.1, ease: "power2.in" }, 1.95);
+        tl.to("#c04-cursor", { scale: 1, duration: 0.34, ease: "back.out(2)" }, 2.05);
+
+        // button compression (linear press) → spring release
+        tl.to("#c04-claim", { scale: 0.93, duration: 0.1, ease: "power1.in" }, 1.95);
+        tl.to("#c04-claim", { scale: 1, duration: 0.5, ease: "back.out(2)" }, 2.05);
+        // burst behind the button on release
+        tl.fromTo(
+          "#c04-burst",
+          { scale: 1, opacity: 0 },
+          { scale: 4.2, opacity: 0.85, duration: 0.44, ease: "power2.out" },
+          2.05
+        );
+        tl.to("#c04-burst", { opacity: 0, duration: 0.5, ease: "power2.in" }, 2.5);
+
+        // panel hands weight rightward: card slides left, cursor rides off
+        tl.to("#c04-card", { x: -196, duration: 0.85, ease: "power3.inOut" }, 2.35);
+        tl.to("#c04-cursor", { opacity: 0, x: CURSOR_END_X - 70, y: CURSOR_END_Y + 40, duration: 0.5, ease: "power2.in" }, 2.35);
+
+        // ───────────────────────── Scene 2 (2.5–5.5s): proof → verifier → ✓, nullifier burns ─────
+        // verifier block fades up as space opens
+        tl.fromTo(
+          "#c04-verifier",
+          { opacity: 0, x: 40, scale: 0.97 },
+          { opacity: 1, x: 0, scale: 1, duration: 0.6, ease: "power3.out" },
+          2.55
+        );
+
+        // proof glyph appears at the card edge, then travels into the verifier center
+        tl.fromTo(
+          "#c04-proof",
+          { opacity: 0, scale: 0.8 },
+          { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" },
+          2.85
+        );
+        // travel: proof center (-42,162) → verifier center (280,162): dx≈+322, shrinking as it "enters"
+        tl.to(
+          "#c04-proof",
+          { x: 318, y: 0, scale: 0.42, opacity: 0, duration: 0.72, ease: "power2.inOut" },
+          3.45
+        );
+
+        // ✓ stamps in the verifier on the proof's arrival ("verified on-chain")
+        var checkPath = document.getElementById("c04-check-path");
+        if (checkPath) {
+          var len = checkPath.getTotalLength();
+          checkPath.style.strokeDasharray = String(len);
+          checkPath.style.strokeDashoffset = String(len);
+        }
+        tl.fromTo(
+          "#c04-check",
+          { scale: 0 },
+          { scale: 1, duration: 0.42, ease: "back.out(1.9)" },
+          4.05
+        );
+        tl.to(
+          "#c04-check-path",
+          { strokeDashoffset: 0, duration: 0.34, ease: "power2.out" },
+          4.2
+        );
+        tl.fromTo(
+          "#c04-verified",
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+          4.42
+        );
+
+        // nullifier ignites then burns out (single-use) on "stays private"
+        tl.fromTo(
+          "#c04-nullifier",
+          { opacity: 0, y: 12 },
+          { opacity: 1, y: 0, duration: 0.44, ease: "power2.out" },
+          4.55
+        );
+        // ember ignites (glow up)
+        tl.fromTo(
+          "#c04-null-ember",
+          { opacity: 0, scale: 0.4, boxShadow: "0 0 0px rgba(200,153,255,0)" },
+          {
+            opacity: 1,
+            scale: 1.25,
+            boxShadow: "0 0 22px rgba(200,153,255,0.9)",
+            duration: 0.34,
+            ease: "power2.out",
+          },
+          4.95
+        );
+        // ember burns out
+        tl.to(
+          "#c04-null-ember",
+          {
+            opacity: 0.18,
+            scale: 0.7,
+            boxShadow: "0 0 0px rgba(200,153,255,0)",
+            duration: 0.5,
+            ease: "power2.in",
+          },
+          5.29
+        );
+        // whole nullifier dims a touch (spent) + burned tag appears
+        tl.to("#c04-nullifier", { filter: "grayscale(0.35)", opacity: 0.7, duration: 0.5, ease: "power2.in" }, 5.29);
+        tl.fromTo(
+          "#c04-null-burned",
+          { opacity: 0, x: 8 },
+          { opacity: 1, x: 0, duration: 0.36, ease: "power2.out" },
+          5.35
+        );
+
+        // ───────────────────────── Scene 3 (5.5–7.4s): payout count-up + "side never revealed" ───
+        // payout figure rises, then counts up +0 → +200
+        tl.fromTo(
+          "#c04-payout-wrap",
+          { opacity: 0, y: 22 },
+          { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+          5.55
+        );
+        var payoutNum = document.getElementById("c04-payout-num");
+        var pv = { v: 0 };
+        tl.to(
+          pv,
+          {
+            v: 200,
+            duration: 1.05,
+            ease: "power3.out",
+            onUpdate: function () {
+              if (payoutNum) payoutNum.textContent = "+" + Math.round(pv.v);
+            },
+          },
+          5.75
+        );
+        // unit slides in after the count settles
+        tl.fromTo(
+          "#c04-payout-unit",
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.7)" },
+          6.8
+        );
+        // divider + "side never revealed" resolve alongside
+        tl.to("#c04-payout-div", { opacity: 1, duration: 0.4, ease: "power2.out" }, 6.05);
+        tl.fromTo(
+          "#c04-private",
+          { opacity: 0, x: 20 },
+          { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" },
+          6.1
+        );
+
+        // calm hold to the end (no exit — not the final frame)
+        window.__timelines["04-claim"] = tl;
+      })();
+    </script>
+  </div>
+</template>

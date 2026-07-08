@@ -1,0 +1,32 @@
+# dependencies & build output
+node_modules/
+dist/
+.next/
+out/
+target/
+.turbo/
+.vercel/
+coverage/
+.cache/
+
+# secrets — NEVER commit (copy the .example/.template and fill your own)
+.env
+.env.local
+.env.production
+.env.*.local
+
+# foundry
+cache/
+broadcast/*/dry-run/
+molfi-contracts/cache/
+
+# zk trusted-setup: large / regenerable (final.zkey + wasm are kept — needed to prove)
+*.ptau
+molfi-circuits/bin/
+molfi-circuits/build_evm/*/0.zkey
+*.wtns
+
+# os / logs
+.DS_Store
+*.log
+npm-debug.log*

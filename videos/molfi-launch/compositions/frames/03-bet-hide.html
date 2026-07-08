@@ -1,0 +1,775 @@
+<template>
+  <div id="root" data-composition-id="03-bet-hide" data-duration="7.147" data-width="1920" data-height="1080">
+    <style>
+      /* ===== Fonts (files ship in assets/fonts/) ===== */
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-400.woff2") format("woff2");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-600.woff2") format("woff2");
+        font-weight: 600;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-700.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-800.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-400.woff2") format("woff2");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-500.woff2") format("woff2");
+        font-weight: 500;
+        font-display: block;
+      }
+
+      /* ===== Root (sub-composition root styled by #root, never a class) ===== */
+      #root {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        font-family: "Barlow", sans-serif;
+      }
+
+      /* Full-bleed ground on a clip layer (never on #root) */
+      #f3-bg {
+        position: absolute;
+        inset: 0;
+        background: #0e0e0e;
+      }
+      /* Faint purple bloom behind the window for depth */
+      #f3-bloom {
+        position: absolute;
+        left: 50%;
+        top: 300px;
+        width: 1400px;
+        height: 760px;
+        margin-left: -700px;
+        background: radial-gradient(
+          ellipse at 50% 45%,
+          rgba(200, 153, 255, 0.10) 0%,
+          rgba(200, 153, 255, 0.03) 42%,
+          rgba(200, 153, 255, 0) 72%
+        );
+        pointer-events: none;
+      }
+
+      /* ===== Camera world (single wrapper — viewport-change) ===== */
+      #f3-world {
+        position: absolute;
+        inset: 0;
+        transform-origin: 50% 50%;
+      }
+
+      /* ===== Floating trade window ===== */
+      #f3-window {
+        position: absolute;
+        left: 310px;
+        top: 96px;
+        width: 1300px;
+        height: 636px;
+        background: #191919;
+        border: 1.5px solid rgba(255, 255, 255, 0.10);
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      /* window chrome bar */
+      #f3-window .winbar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 52px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        box-sizing: border-box;
+        gap: 10px;
+      }
+      #f3-window .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.16);
+      }
+      #f3-window .win-title {
+        margin-left: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: #ababab;
+      }
+      #f3-window .win-net {
+        margin-left: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 500;
+        color: #717680;
+        letter-spacing: 0.02em;
+      }
+
+      /* body split */
+      #f3-body {
+        position: absolute;
+        left: 0;
+        top: 52px;
+        width: 100%;
+        height: 584px;
+        display: flex;
+      }
+
+      /* ---- LEFT: chart panel ---- */
+      #f3-chart {
+        width: 720px;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 30px 30px 26px 34px;
+        border-right: 1px solid rgba(255, 255, 255, 0.07);
+        position: relative;
+      }
+      #f3-chart .mkt-eyebrow {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+        color: #c899ff;
+      }
+      #f3-chart .mkt-q {
+        margin-top: 8px;
+        font-size: 27px;
+        font-weight: 700;
+        line-height: 1.18;
+        letter-spacing: -0.01em;
+        color: #ffffff;
+        max-width: 560px;
+      }
+      #f3-chart .mkt-meta {
+        margin-top: 10px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        font-weight: 500;
+        color: #717680;
+        letter-spacing: 0.02em;
+      }
+      #f3-chart .chart-wrap {
+        position: absolute;
+        left: 34px;
+        right: 30px;
+        top: 178px;
+        bottom: 30px;
+      }
+      #f3-chart svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        overflow: visible;
+      }
+      #f3-chart .strike-label {
+        position: absolute;
+        right: 2px;
+        top: 96px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 500;
+        color: #c899ff;
+        background: rgba(200, 153, 255, 0.12);
+        padding: 3px 8px;
+        border-radius: 6px;
+        letter-spacing: 0.02em;
+      }
+
+      /* ---- RIGHT: bet ticket ---- */
+      #f3-ticket {
+        width: 580px;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 28px 34px 30px 34px;
+        position: relative;
+      }
+      /* tabs */
+      #f3-tabs {
+        display: flex;
+        gap: 6px;
+        background: #1f1f1f;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 5px;
+        position: relative;
+      }
+      #f3-tabs .tab {
+        flex: 1;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        color: #717680;
+        padding: 11px 0;
+        border-radius: 8px;
+        position: relative;
+        z-index: 2;
+      }
+      #f3-tabs .tab.is-active {
+        color: #ffffff;
+      }
+      /* sliding tab indicator */
+      #f3-tab-ind {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        width: 255px;
+        height: 44px;
+        background: rgba(200, 153, 255, 0.16);
+        border: 1px solid rgba(200, 153, 255, 0.30);
+        border-radius: 8px;
+        z-index: 1;
+      }
+
+      #f3-side-label {
+        margin-top: 26px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+        color: #717680;
+      }
+
+      /* YES / NO toggle */
+      #f3-sides {
+        margin-top: 12px;
+        display: flex;
+        gap: 14px;
+        position: relative;
+      }
+      .f3-side {
+        flex: 1;
+        height: 84px;
+        border-radius: 12px;
+        border: 1.5px solid rgba(255, 255, 255, 0.10);
+        background: #1f1f1f;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        position: relative;
+        overflow: hidden;
+      }
+      .f3-side .s-name {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .f3-side .s-odds {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        font-weight: 500;
+        color: #ababab;
+      }
+      #f3-side-yes .s-name {
+        color: #34d399;
+      }
+      #f3-side-no .s-name {
+        color: #f87171;
+      }
+      /* green fill wash that pulses when YES is picked */
+      #f3-yes-fill {
+        position: absolute;
+        inset: 0;
+        background: rgba(52, 211, 153, 0.16);
+        border-radius: 11px;
+        opacity: 0;
+        pointer-events: none;
+      }
+      /* selection ring on YES */
+      #f3-yes-ring {
+        position: absolute;
+        inset: -1.5px;
+        border-radius: 12px;
+        border: 2px solid #34d399;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ===== Commitment tile (collapsed private state) ===== */
+      #f3-commit {
+        position: absolute;
+        left: 34px;
+        right: 34px;
+        top: 172px;
+        height: 84px;
+        border-radius: 12px;
+        border: 1.5px solid rgba(200, 153, 255, 0.42);
+        background: rgba(200, 153, 255, 0.14);
+        display: flex;
+        align-items: center;
+        padding: 0 22px;
+        gap: 16px;
+        opacity: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      #f3-commit .lock-badge {
+        width: 46px;
+        height: 46px;
+        border-radius: 11px;
+        background: rgba(200, 153, 255, 0.20);
+        border: 1px solid rgba(200, 153, 255, 0.40);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+      }
+      #f3-commit .c-text {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      #f3-commit .c-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 0.01em;
+      }
+      #f3-commit .c-hash {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        font-weight: 500;
+        color: #c899ff;
+        letter-spacing: 0.02em;
+      }
+
+      /* amount field */
+      #f3-amount-label {
+        margin-top: 24px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+        color: #717680;
+      }
+      #f3-amount {
+        margin-top: 12px;
+        height: 66px;
+        border-radius: 12px;
+        border: 1.5px solid rgba(255, 255, 255, 0.10);
+        background: #1f1f1f;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 22px;
+      }
+      #f3-amount .amt-val {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 30px;
+        font-weight: 500;
+        color: #ffffff;
+        letter-spacing: 0.01em;
+      }
+      #f3-amount .amt-cur {
+        font-size: 17px;
+        font-weight: 600;
+        color: #ababab;
+      }
+
+      /* est payout row */
+      #f3-payout {
+        margin-top: 16px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+      }
+      #f3-payout .p-label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #ababab;
+      }
+      #f3-payout .p-val {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        font-weight: 500;
+        color: #34d399;
+      }
+
+      /* Bet button */
+      #f3-bet {
+        margin-top: 18px;
+        height: 60px;
+        border-radius: 100px;
+        background: #c899ff;
+        color: #0e0e0e;
+        font-family: "Barlow", sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform-origin: 50% 50%;
+      }
+
+      /* ===== Cursor (protagonist) ===== */
+      #f3-cursor {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 40px;
+        height: 40px;
+        z-index: 60;
+        pointer-events: none;
+        transform-origin: 6px 4px;
+      }
+      #f3-cursor svg {
+        display: block;
+        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+      }
+
+      /* click ripple rings — anchored to click point, hidden until fired */
+      .f3-ripple {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 90px;
+        height: 90px;
+        margin-left: -45px;
+        margin-top: -45px;
+        border-radius: 50%;
+        border: 2px solid rgba(200, 153, 255, 0.9);
+        opacity: 0;
+        transform: scale(0);
+        z-index: 55;
+        pointer-events: none;
+      }
+      #f3-ripple-yes {
+        border-color: rgba(52, 211, 153, 0.9);
+      }
+    </style>
+
+    <!-- lowest track: full-bleed ground -->
+    <div id="f3-bg" class="clip" data-start="0" data-duration="7.147" data-track-index="0"></div>
+    <div id="f3-bloom" class="clip" data-start="0" data-duration="7.147" data-track-index="1"></div>
+
+    <!-- camera world holds the whole terminal -->
+    <div id="f3-world" class="clip" data-start="0" data-duration="7.147" data-track-index="2">
+      <div id="f3-window">
+        <div class="winbar">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="win-title">Molfi · Trade</span>
+          <span class="win-net">stellar · testnet</span>
+        </div>
+
+        <div id="f3-body">
+          <!-- LEFT chart -->
+          <div id="f3-chart">
+            <div class="mkt-eyebrow">Crypto · 15m</div>
+            <div class="mkt-q">BTC above $109,400 at close?</div>
+            <div class="mkt-meta">Reflector oracle · resolves 15m</div>
+
+            <div class="chart-wrap">
+              <svg viewBox="0 0 640 300" preserveAspectRatio="none">
+                <!-- dashed purple strike line -->
+                <line
+                  id="f3-strike"
+                  x1="0"
+                  y1="118"
+                  x2="640"
+                  y2="118"
+                  stroke="#c899ff"
+                  stroke-width="2"
+                  stroke-dasharray="9 8"
+                  opacity="0.85"
+                />
+                <!-- price line (drawn on) -->
+                <path
+                  id="f3-line"
+                  d="M0 232 L64 214 L128 236 L192 190 L256 204 L320 150 L384 168 L448 120 L512 138 L576 86 L640 104"
+                  fill="none"
+                  stroke="#34d399"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <div class="strike-label">strike $109,400</div>
+            </div>
+          </div>
+
+          <!-- RIGHT ticket -->
+          <div id="f3-ticket">
+            <div id="f3-tabs">
+              <div id="f3-tab-ind"></div>
+              <div class="tab is-active" id="f3-tab-std">Standard</div>
+              <div class="tab" id="f3-tab-priv">Private</div>
+            </div>
+
+            <div id="f3-side-label">Your side</div>
+            <div id="f3-sides">
+              <div class="f3-side" id="f3-side-yes">
+                <div id="f3-yes-fill"></div>
+                <div id="f3-yes-ring"></div>
+                <div class="s-name">YES</div>
+                <div class="s-odds">62¢</div>
+              </div>
+              <div class="f3-side" id="f3-side-no">
+                <div class="s-name">NO</div>
+                <div class="s-odds">38¢</div>
+              </div>
+            </div>
+
+            <!-- collapsed commitment tile (hidden until Scene 3) -->
+            <div id="f3-commit">
+              <div class="lock-badge">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <rect x="4.5" y="10.5" width="15" height="10.5" rx="2.4" fill="#c899ff" />
+                  <path
+                    d="M7.5 10.5V7.5a4.5 4.5 0 0 1 9 0v3"
+                    stroke="#c899ff"
+                    stroke-width="2.1"
+                    fill="none"
+                    stroke-linecap="round"
+                  />
+                  <circle cx="12" cy="15.4" r="1.7" fill="#0e0e0e" />
+                </svg>
+              </div>
+              <div class="c-text">
+                <div class="c-title">Side hidden</div>
+                <div class="c-hash">commit 0x7a3f…e9c1</div>
+              </div>
+            </div>
+
+            <div id="f3-amount-label">Amount</div>
+            <div id="f3-amount">
+              <span class="amt-val">100</span>
+              <span class="amt-cur">mUSDC</span>
+            </div>
+
+            <div id="f3-payout">
+              <span class="p-label">Est. payout</span>
+              <span class="p-val" id="f3-payout-val">+161 mUSDC</span>
+            </div>
+
+            <div id="f3-bet">Bet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ripple rings + cursor live in world space so the camera carries them -->
+      <div class="f3-ripple" id="f3-ripple-yes"></div>
+      <div class="f3-ripple" id="f3-ripple-tab"></div>
+
+      <div id="f3-cursor">
+        <svg width="40" height="40" viewBox="0 0 24 24">
+          <path
+            d="M5 3L19 12L12 13L9 20L5 3Z"
+            fill="#c899ff"
+            stroke="#0e0e0e"
+            stroke-width="1.3"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      (function () {
+        var tl = gsap.timeline({ paused: true });
+
+        /* ---------- click-target coordinates (world space, px) ----------
+           #f3-window: left 310, top 96; body top offset 52.
+           #f3-ticket starts at window x = 310 + 720 = 1030, padding-left 34.
+           Tabs row inner: x0 = 1030 + 34 = 1064, y0 = 96 + 52 + 28 = 176, height 54.
+           YES card: sides row top = 176 + (28+8) chrome... computed below. */
+        var YES_CX = 1186, YES_CY = 354;   // centre of the YES card (measured)
+        var TAB_CX = 1440, TAB_CY = 233;   // centre of the Private tab (measured)
+        // Seat the visual arrow TIP (not the box origin) on the target center.
+        // Measured: box-origin + (10,7) landed ~28px low, so lift Y accordingly.
+        var TIP_X = 10, TIP_Y = 35;
+
+        /* ---------- SCENE 1 (0–2.5s): window builds, chart draws ---------- */
+        // window fade + subtle rise
+        tl.fromTo(
+          "#f3-window",
+          { autoAlpha: 0, y: 26, scale: 0.985 },
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "power3.out" },
+          0.0
+        );
+        tl.fromTo(
+          "#f3-bloom",
+          { opacity: 0 },
+          { opacity: 1, duration: 0.9, ease: "power2.out" },
+          0.1
+        );
+
+        // dashed strike line fades in
+        tl.fromTo(
+          "#f3-strike",
+          { opacity: 0 },
+          { opacity: 0.85, duration: 0.5, ease: "power2.out" },
+          0.55
+        );
+        tl.fromTo(
+          ".strike-label",
+          { autoAlpha: 0, x: 8 },
+          { autoAlpha: 1, x: 0, duration: 0.45, ease: "power2.out" },
+          0.75
+        );
+
+        // price line draws on (stroke-dashoffset)
+        var line = document.getElementById("f3-line");
+        var LEN = 900;
+        try { LEN = line.getTotalLength(); } catch (e) {}
+        gsap.set(line, { strokeDasharray: LEN, strokeDashoffset: LEN });
+        tl.to(
+          "#f3-line",
+          { strokeDashoffset: 0, duration: 1.35, ease: "power2.inOut" },
+          0.6
+        );
+
+        // cursor waits off to the lower-left, then holds
+        gsap.set("#f3-cursor", { x: 980, y: 720, autoAlpha: 0 });
+        tl.to("#f3-cursor", { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, 1.9);
+
+        /* ---------- SCENE 2 (2.5–5s): pick YES, then flip Private ---------- */
+        // camera nudges gently toward the ticket (world scales up + shifts left)
+        tl.to(
+          "#f3-world",
+          { scale: 1.06, x: -132, y: -8, duration: 1.5, ease: "power2.inOut" },
+          2.35
+        );
+
+        // --- cursor → YES ---
+        tl.to(
+          "#f3-cursor",
+          { x: YES_CX - TIP_X, y: YES_CY - TIP_Y, duration: 0.62, ease: "power3.out" },
+          2.4
+        );
+        // click depression on cursor + YES card
+        tl.to(
+          "#f3-cursor",
+          { scale: 0.85, duration: 0.08, ease: "power2.in", yoyo: true, repeat: 1 },
+          3.05
+        );
+        tl.to(
+          "#f3-side-yes",
+          { scale: 0.96, duration: 0.08, ease: "power2.in", yoyo: true, repeat: 1 },
+          3.05
+        );
+        // YES selection ring appears + green fill pulses
+        tl.fromTo(
+          "#f3-yes-ring",
+          { opacity: 0 },
+          { opacity: 1, duration: 0.3, ease: "power2.out" },
+          3.1
+        );
+        tl.fromTo(
+          "#f3-yes-fill",
+          { opacity: 0 },
+          { opacity: 1, duration: 0.22, ease: "power2.out" },
+          3.1
+        );
+        // fill pulse (settle to a held tint, no infinite loop)
+        tl.to("#f3-yes-fill", { opacity: 0.55, duration: 0.5, ease: "sine.inOut" }, 3.32);
+        // green ripple from YES click point
+        tl.set("#f3-ripple-yes", { x: YES_CX, y: YES_CY, opacity: 1 }, 3.1);
+        tl.fromTo(
+          "#f3-ripple-yes",
+          { scale: 0, opacity: 0.9 },
+          { scale: 3.4, opacity: 0, duration: 0.7, ease: "power2.out", immediateRender: false },
+          3.1
+        );
+
+        // --- cursor → Private tab ---
+        tl.to(
+          "#f3-cursor",
+          { x: TAB_CX - TIP_X, y: TAB_CY - TIP_Y, duration: 0.58, ease: "power3.out" },
+          3.95
+        );
+        // click depression on cursor
+        tl.to(
+          "#f3-cursor",
+          { scale: 0.85, duration: 0.08, ease: "power2.in", yoyo: true, repeat: 1 },
+          4.55
+        );
+        // tab indicator slides from Standard → Private (255+6 gap ≈ 261)
+        tl.to("#f3-tab-ind", { x: 261, duration: 0.42, ease: "power3.inOut" }, 4.58);
+        tl.to("#f3-tab-std", { color: "#717680", duration: 0.35 }, 4.58);
+        tl.to("#f3-tab-priv", { color: "#ffffff", duration: 0.35 }, 4.58);
+        // purple ripple from tab click point
+        tl.set("#f3-ripple-tab", { x: TAB_CX, y: TAB_CY, opacity: 1 }, 4.55);
+        tl.fromTo(
+          "#f3-ripple-tab",
+          { scale: 0, opacity: 0.85 },
+          { scale: 3.0, opacity: 0, duration: 0.65, ease: "power2.out", immediateRender: false },
+          4.55
+        );
+
+        /* ---------- SCENE 3 (5–7.1s): side collapses into commitment tile ---------- */
+        // the YES/NO row + its label MERGE into one uniform purple tile.
+        // green wash + ring fade out as the two cards collapse to a point.
+        tl.to(["#f3-yes-fill", "#f3-yes-ring"], { opacity: 0, duration: 0.3, ease: "power2.in" }, 5.15);
+        tl.to(
+          "#f3-sides",
+          { scaleY: 0.0, opacity: 0, transformOrigin: "50% 50%", duration: 0.45, ease: "power2.inOut" },
+          5.2
+        );
+        tl.to("#f3-side-label", { autoAlpha: 0, duration: 0.3, ease: "power1.in" }, 5.2);
+
+        // the uniform purple commitment tile snaps in (lock/hash), replacing the row
+        tl.fromTo(
+          "#f3-commit",
+          { opacity: 0, scale: 0.9, transformOrigin: "50% 50%" },
+          { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.6)" },
+          5.5
+        );
+        // soft lock-snap accent: badge gives a tiny recoil
+        tl.fromTo(
+          "#f3-commit .lock-badge",
+          { scale: 0.7 },
+          { scale: 1, duration: 0.4, ease: "back.out(2.2)" },
+          5.62
+        );
+
+        // amount label morphs to the private ticket read; payout side hides
+        tl.to("#f3-amount-label", { color: "#c899ff", duration: 0.4 }, 5.7);
+        tl.to("#f3-payout-val", { color: "#717680", duration: 0.4 }, 5.7);
+
+        // Bet button confirms the private state (label handled visually; gentle emphasis)
+        tl.fromTo(
+          "#f3-bet",
+          { scale: 1 },
+          { scale: 1.03, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1 },
+          5.9
+        );
+
+        // cursor drifts off the active tile so the final read is clean (NOT an exit — stays on screen)
+        tl.to("#f3-cursor", { x: TAB_CX - TIP_X + 40, y: TAB_CY - TIP_Y + 18, duration: 0.6, ease: "power2.inOut" }, 5.6);
+
+        // hold to the end (7.147). No exit tween — not the final frame.
+
+        window.__timelines["03-bet-hide"] = tl;
+      })();
+    </script>
+  </div>
+</template>

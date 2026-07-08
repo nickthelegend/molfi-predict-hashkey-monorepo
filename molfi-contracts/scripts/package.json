@@ -1,0 +1,9 @@
+{
+  "name": "molfi-contracts-scripts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "ethers": "^6.13.0",
+    "snarkjs": "^0.7.6"
+  }
+}

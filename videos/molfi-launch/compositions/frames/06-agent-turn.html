@@ -1,0 +1,395 @@
+<template>
+  <div id="root" data-composition-id="06-agent-turn" data-duration="4.352" data-width="1920" data-height="1080">
+    <!-- ─────────────────────────────────────────────────────────────
+         Frame 6 — Not just for people (the human→agent hinge)
+         Canvas 1920x1080 · captions ON (content ≤ ~895px)
+         Beat 1: receded market-grid ghost dims + blurs to near-black
+         Beat 2: "Built for agents." types on (Barlow) w/ blinking caret
+         Beat 3: empty JetBrains-Mono terminal window fades up, caret waiting
+         NOT final → no exit tween.
+    ────────────────────────────────────────────────────────────── -->
+    <style>
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-400.woff2") format("woff2");
+        font-weight: 400; font-style: normal; font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-600.woff2") format("woff2");
+        font-weight: 600; font-style: normal; font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-700.woff2") format("woff2");
+        font-weight: 700; font-style: normal; font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-800.woff2") format("woff2");
+        font-weight: 800; font-style: normal; font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-400.woff2") format("woff2");
+        font-weight: 400; font-style: normal; font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-500.woff2") format("woff2");
+        font-weight: 500; font-style: normal; font-display: block;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0e0e0e;
+        font-family: "Barlow", sans-serif;
+      }
+
+      /* Full-bleed ground on a clip layer (never on #root) */
+      #ag-ground {
+        position: absolute;
+        inset: 0;
+        background: #0e0e0e;
+      }
+
+      /* ── Receded market-grid ghost ─────────────────────────────── */
+      #ag-grid-world {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 34px;
+        /* keep the ghost inside the caption keep-out (bottom ≤ ~880) */
+        padding: 150px 200px 200px;
+        transform-origin: 50% 46%;
+        will-change: filter, transform, opacity;
+        --dof: 0px;
+        filter: blur(var(--dof));
+      }
+      .ag-ghost-card {
+        position: relative;
+        border: 1.5px solid rgba(255, 255, 255, 0.10);
+        border-radius: 14px;
+        background: #191919;
+        padding: 26px 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .ag-ghost-title {
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 1.3;
+        color: #ababab;
+        letter-spacing: -0.01em;
+      }
+      .ag-ghost-sub {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 400;
+        font-size: 15px;
+        letter-spacing: 0.04em;
+        color: #717680;
+        margin-top: 10px;
+      }
+      .ag-ghost-bar {
+        position: relative;
+        height: 8px;
+        border-radius: 6px;
+        background: rgba(200, 153, 255, 0.10);
+        margin-top: 22px;
+        overflow: hidden;
+      }
+      .ag-ghost-bar > i {
+        position: absolute;
+        inset: 0 40% 0 0;
+        display: block;
+        border-radius: 6px;
+        background: #34d399;
+        opacity: 0.55;
+      }
+      .ag-ghost-odds {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 20px;
+      }
+      .ag-ghost-num {
+        font-family: "Barlow", sans-serif;
+        font-weight: 700;
+        font-size: 30px;
+        color: #c899ff;
+        line-height: 1;
+      }
+      .ag-ghost-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 400;
+        font-size: 14px;
+        letter-spacing: 0.05em;
+        color: #717680;
+      }
+
+      /* ── Headline "Built for agents." ──────────────────────────── */
+      #ag-headline-wrap {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 300px;              /* well above the 895px keep-out */
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        will-change: transform, opacity;
+      }
+      #ag-headline {
+        font-family: "Barlow", sans-serif;
+        font-weight: 800;
+        font-size: 132px;
+        line-height: 1.0;
+        letter-spacing: -0.02em;
+        color: #ffffff;
+        white-space: pre;
+      }
+      #ag-headline .accent { color: #c899ff; }
+      #ag-caret {
+        display: inline-block;
+        width: 14px;
+        height: 108px;
+        margin-left: 16px;
+        background: #c899ff;
+        vertical-align: -14px;
+        will-change: opacity;
+      }
+
+      /* ── Empty terminal window ─────────────────────────────────── */
+      #ag-terminal {
+        position: absolute;
+        left: 50%;
+        top: 508px;
+        width: 980px;
+        margin-left: -490px;    /* center via margin, not transform */
+        border: 1.5px solid rgba(255, 255, 255, 0.10);
+        border-radius: 14px;
+        background: #191919;
+        overflow: hidden;
+        will-change: transform, opacity;
+      }
+      #ag-term-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        height: 52px;
+        padding: 0 22px;
+        background: #1f1f1f;
+        border-bottom: 1.5px solid rgba(255, 255, 255, 0.10);
+      }
+      .ag-dot {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+      }
+      .ag-dot.d1 { background: #f87171; }
+      .ag-dot.d2 { background: #e6b34a; }
+      .ag-dot.d3 { background: #34d399; }
+      #ag-term-name {
+        margin-left: 14px;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 500;
+        font-size: 16px;
+        letter-spacing: 0.04em;
+        color: #ababab;
+      }
+      #ag-term-body {
+        height: 208px;
+        padding: 26px 28px;
+        display: flex;
+        align-items: flex-start;
+      }
+      #ag-term-prompt {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 500;
+        font-size: 26px;
+        color: #c899ff;
+        line-height: 1;
+      }
+      #ag-term-caret {
+        display: inline-block;
+        width: 13px;
+        height: 26px;
+        margin-left: 14px;
+        background: #c899ff;
+        will-change: opacity;
+      }
+    </style>
+
+    <!-- Full-bleed ground (lowest track) -->
+    <div id="ag-ground" class="clip" data-start="0" data-duration="4.352" data-track-index="0"></div>
+
+    <!-- Receded market-grid ghost (track 1) -->
+    <div id="ag-grid-world" class="clip" data-start="0" data-duration="4.352" data-track-index="1">
+      <div class="ag-ghost-card">
+        <div>
+          <div class="ag-ghost-title">BTC above its price at close?</div>
+          <div class="ag-ghost-sub">Reflector · 15m</div>
+        </div>
+        <div>
+          <div class="ag-ghost-bar"><i style="inset:0 38% 0 0"></i></div>
+          <div class="ag-ghost-odds"><span class="ag-ghost-num">62%</span><span class="ag-ghost-tag">YES</span></div>
+        </div>
+      </div>
+      <div class="ag-ghost-card">
+        <div>
+          <div class="ag-ghost-title">ETH above its price at close?</div>
+          <div class="ag-ghost-sub">Reflector · 15m</div>
+        </div>
+        <div>
+          <div class="ag-ghost-bar"><i style="inset:0 47% 0 0"></i></div>
+          <div class="ag-ghost-odds"><span class="ag-ghost-num">53%</span><span class="ag-ghost-tag">YES</span></div>
+        </div>
+      </div>
+      <div class="ag-ghost-card">
+        <div>
+          <div class="ag-ghost-title">SOL above its price at close?</div>
+          <div class="ag-ghost-sub">Reflector · 15m</div>
+        </div>
+        <div>
+          <div class="ag-ghost-bar"><i style="inset:0 55% 0 0"></i></div>
+          <div class="ag-ghost-odds"><span class="ag-ghost-num">45%</span><span class="ag-ghost-tag">YES</span></div>
+        </div>
+      </div>
+      <div class="ag-ghost-card">
+        <div>
+          <div class="ag-ghost-title">XLM above its price at close?</div>
+          <div class="ag-ghost-sub">Reflector · 15m</div>
+        </div>
+        <div>
+          <div class="ag-ghost-bar"><i style="inset:0 42% 0 0"></i></div>
+          <div class="ag-ghost-odds"><span class="ag-ghost-num">58%</span><span class="ag-ghost-tag">YES</span></div>
+        </div>
+      </div>
+      <div class="ag-ghost-card">
+        <div>
+          <div class="ag-ghost-title">DOGE above its price at close?</div>
+          <div class="ag-ghost-sub">Reflector · 15m</div>
+        </div>
+        <div>
+          <div class="ag-ghost-bar"><i style="inset:0 61% 0 0"></i></div>
+          <div class="ag-ghost-odds"><span class="ag-ghost-num">39%</span><span class="ag-ghost-tag">YES</span></div>
+        </div>
+      </div>
+      <div class="ag-ghost-card">
+        <div>
+          <div class="ag-ghost-title">AVAX above its price at close?</div>
+          <div class="ag-ghost-sub">Reflector · 15m</div>
+        </div>
+        <div>
+          <div class="ag-ghost-bar"><i style="inset:0 50% 0 0"></i></div>
+          <div class="ag-ghost-odds"><span class="ag-ghost-num">50%</span><span class="ag-ghost-tag">YES</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Headline (track 2) -->
+    <div id="ag-headline-wrap" class="clip" data-start="0.7" data-duration="3.652" data-track-index="2">
+      <div id="ag-headline"><span id="ag-headline-text"></span><span id="ag-caret"></span></div>
+    </div>
+
+    <!-- Empty terminal window (track 3) -->
+    <div id="ag-terminal" class="clip" data-start="2.7" data-duration="1.652" data-track-index="3">
+      <div id="ag-term-bar">
+        <span class="ag-dot d1"></span>
+        <span class="ag-dot d2"></span>
+        <span class="ag-dot d3"></span>
+        <span id="ag-term-name">molfi-agent</span>
+      </div>
+      <div id="ag-term-body">
+        <span id="ag-term-prompt">$</span>
+        <span id="ag-term-caret"></span>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // ── BEAT 1 — receded market-grid ghost dims + blurs to near-black ──
+      // depth-of-field-blur (focal-pull, no focal): the whole ghost world
+      // blurs + dims + eases back, so the canvas returns to near-black.
+      gsap.set("#ag-grid-world", { "--dof": "3px", opacity: 0.5, scale: 1.0 });
+      tl.to(
+        "#ag-grid-world",
+        { "--dof": "26px", opacity: 0.0, scale: 0.965, duration: 1.6, ease: "power2.inOut" },
+        0.15
+      );
+
+      // ── BEAT 2 — "Built for agents." types on (Barlow) w/ blinking caret ──
+      // smooth-slice typewriter (discrete-text-sequence variation).
+      const FULL = "Built for agents.";
+      const headEl = document.getElementById("ag-headline-text");
+      const len = { v: 0 };
+      // headline block fades up first
+      tl.fromTo(
+        "#ag-headline-wrap",
+        { opacity: 0, y: 26 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+        0.7
+      );
+      tl.to(
+        len,
+        {
+          v: FULL.length,
+          duration: 1.35,
+          ease: "none",
+          onUpdate: () => { headEl.textContent = FULL.substring(0, Math.floor(len.v)); },
+        },
+        0.9
+      );
+
+      // Headline caret — deterministic sin blink (context-sensitive-cursor).
+      // ~1 blink / 0.6s across the 3.652s the caret is on screen.
+      const hCaret = document.getElementById("ag-caret");
+      const hBlink = { p: 0 };
+      tl.to(
+        hBlink,
+        {
+          p: Math.PI * 2 * 6,   // 6 whole cycles → clean end, no last-frame pop
+          duration: 3.652,
+          ease: "none",
+          onUpdate: () => { hCaret.style.opacity = Math.sin(hBlink.p) > 0 ? "1" : "0"; },
+        },
+        0.7
+      );
+
+      // ── BEAT 3 — empty terminal window fades up, caret waiting ──
+      tl.fromTo(
+        "#ag-terminal",
+        { opacity: 0, y: 34, scale: 0.98 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "power2.out" },
+        2.7
+      );
+
+      // Terminal caret — deterministic sin blink, waiting for Act 2.
+      const tCaret = document.getElementById("ag-term-caret");
+      const tBlink = { p: 0 };
+      tl.to(
+        tBlink,
+        {
+          p: Math.PI * 2 * 3,   // 3 whole cycles over the ~1.65s it's visible
+          duration: 1.652,
+          ease: "none",
+          onUpdate: () => { tCaret.style.opacity = Math.sin(tBlink.p) > 0 ? "1" : "0"; },
+        },
+        2.7
+      );
+
+      // NOT the final frame → no exit tween (root transition owns the exit).
+
+      window.__timelines["06-agent-turn"] = tl;
+    </script>
+  </div>
+</template>

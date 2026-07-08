@@ -1,0 +1,19 @@
+{
+  "network": "testnet",
+  "chainId": 133,
+  "marketId": "0xa73a78bd1a5e669c831605c2fb77e82c4449e995d38b433b0670df2fd93f5000",
+  "hashes": {
+    "market.create": "0xb6d887716c42fee5a41eb264a7ebaab18947f8ee1c359f29402459dac112625d",
+    "escrow.betZk(YES)": "0xeeee3a620013bf82a49d2b5792da8fc8d5efd15defd960864fb146815c6df683",
+    "escrow.bet(NO)": "0xa4c7f946de247ca2be7e2b438347ee0862577cd7c7911db494528fb4e987c5d3",
+    "market.resolveOracle": "0xea9364364e337b7ddb5ad4435ceff2930fa66b80848080cd955d9d407699d867",
+    "escrow.redeem": "0x9fda16467af9ef8cbb90a25d86f9d3963d1f716eb3894205897b28057dd0b6a1",
+    "conf.commit#1": "0xc8995be87dae0f9840ed2d1d9f6c5356272926dc2253c228f2904d9bca6b6b18",
+    "conf.commit#2": "0x15a5828c0c90ce46180695115707a3e3526f9155c944d916c2a03e93d78c78e3",
+    "conf.registerRoot": "0x9a3e105c5969273db0059aa3b7d5a075b3bce3070424f9a1adcba48fa9dfa2c6",
+    "conf.claim": "0x17dec342e1c00f08d175517b732ca816320d10b3b4cd4b422e95e176f031d3c4",
+    "pool.deposit": "0x95a6c08c1d24daf07e4c42b5a9fb36069778abda86d506b4c87e08d4fd4e11cf",
+    "pool.registerRoot": "0xe77064d6422563015b03721feccf996e63d03b37cab025861243a91d1bea1136",
+    "pool.withdraw": "0x99613b28e54af922392f2d5515df8435549b2cb2ec99910b692a0a80abec8731"
+  }
+}

@@ -1,0 +1,450 @@
+<template data-composition-id="05-venue">
+  <div id="root" data-composition-id="05-venue" data-width="1920" data-height="1080">
+    <!-- full-bleed ground on a clip layer (never on #root) -->
+    <div class="bg clip" data-start="0" data-duration="6.848" data-track-index="0"></div>
+
+    <!-- camera wrapper: everything the zoom-out pulls back from lives inside -->
+    <div class="stage clip" data-start="0" data-duration="6.848" data-track-index="1">
+      <div class="world" id="world">
+        <!-- faint outer ring of partial cards — revealed by the zoom-out ("a bigger venue") -->
+        <div class="ghosts" id="ghosts">
+          <div class="gcard" style="top:-260px;  left:-720px;"></div>
+          <div class="gcard" style="top:-260px;  left: 480px;"></div>
+          <div class="gcard" style="top: 300px;  left:-720px;"></div>
+          <div class="gcard" style="top: 300px;  left: 480px;"></div>
+          <div class="gcard" style="top:-420px;  left:-140px;"></div>
+          <div class="gcard" style="top: 480px;  left:-140px;"></div>
+          <div class="gcard" style="top:  40px;  left:-980px;"></div>
+          <div class="gcard" style="top:  40px;  left: 740px;"></div>
+        </div>
+
+        <!-- the live 2×3 markets grid -->
+        <div class="grid" id="grid">
+          <!-- BTC -->
+          <div class="mcard" data-yes="62">
+            <div class="mtop">
+              <div class="coin">
+                <span class="dot" style="background:#f7931a"></span>
+                <span class="sym">BTC</span>
+              </div>
+              <span class="tf">15m</span>
+            </div>
+            <div class="q">above its price at close?</div>
+            <div class="src">Reflector</div>
+            <div class="bar"><span class="fill yes" style="width:62%"></span></div>
+            <div class="mbot">
+              <span class="odds">62% YES</span>
+              <span class="vol">$14.2k</span>
+            </div>
+          </div>
+
+          <!-- ETH -->
+          <div class="mcard" data-yes="54">
+            <div class="mtop">
+              <div class="coin">
+                <span class="dot" style="background:#8a92b2"></span>
+                <span class="sym">ETH</span>
+              </div>
+              <span class="tf">15m</span>
+            </div>
+            <div class="q">above its price at close?</div>
+            <div class="src">Reflector</div>
+            <div class="bar"><span class="fill yes" style="width:54%"></span></div>
+            <div class="mbot">
+              <span class="odds">54% YES</span>
+              <span class="vol">$9.8k</span>
+            </div>
+          </div>
+
+          <!-- SOL -->
+          <div class="mcard" data-yes="47">
+            <div class="mtop">
+              <div class="coin">
+                <span class="dot" style="background:#14f195"></span>
+                <span class="sym">SOL</span>
+              </div>
+              <span class="tf">15m</span>
+            </div>
+            <div class="q">above its price at close?</div>
+            <div class="src">Reflector</div>
+            <div class="bar"><span class="fill no" style="width:53%"></span></div>
+            <div class="mbot">
+              <span class="odds no-odds">53% NO</span>
+              <span class="vol">$7.1k</span>
+            </div>
+          </div>
+
+          <!-- XLM -->
+          <div class="mcard" data-yes="71">
+            <div class="mtop">
+              <div class="coin">
+                <span class="dot" style="background:#c899ff"></span>
+                <span class="sym">XLM</span>
+              </div>
+              <span class="tf">15m</span>
+            </div>
+            <div class="q">above its price at close?</div>
+            <div class="src">Reflector</div>
+            <div class="bar"><span class="fill yes" style="width:71%"></span></div>
+            <div class="mbot">
+              <span class="odds">71% YES</span>
+              <span class="vol">$21.6k</span>
+            </div>
+          </div>
+
+          <!-- DOGE -->
+          <div class="mcard" data-yes="38">
+            <div class="mtop">
+              <div class="coin">
+                <span class="dot" style="background:#c2a633"></span>
+                <span class="sym">DOGE</span>
+              </div>
+              <span class="tf">15m</span>
+            </div>
+            <div class="q">above its price at close?</div>
+            <div class="src">Reflector</div>
+            <div class="bar"><span class="fill no" style="width:62%"></span></div>
+            <div class="mbot">
+              <span class="odds no-odds">62% NO</span>
+              <span class="vol">$5.4k</span>
+            </div>
+          </div>
+
+          <!-- AVAX -->
+          <div class="mcard" data-yes="58">
+            <div class="mtop">
+              <div class="coin">
+                <span class="dot" style="background:#e84142"></span>
+                <span class="sym">AVAX</span>
+              </div>
+              <span class="tf">15m</span>
+            </div>
+            <div class="q">above its price at close?</div>
+            <div class="src">Reflector</div>
+            <div class="bar"><span class="fill yes" style="width:58%"></span></div>
+            <div class="mbot">
+              <span class="odds">58% YES</span>
+              <span class="vol">$11.9k</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- the stamp-in pill chip (rides above the camera; bottom-center, inside keep-out) -->
+    <div class="chip clip" id="chip" data-start="3" data-duration="3.848" data-track-index="2">
+      <span class="cdot"></span>on Stellar
+      <span class="sep">·</span> Soroban
+      <span class="sep">·</span> settled by Reflector
+    </div>
+
+    <style>
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-400.woff2") format("woff2");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-600.woff2") format("woff2");
+        font-weight: 600;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-700.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-800.woff2") format("woff2");
+        font-weight: 800;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-400.woff2") format("woff2");
+        font-weight: 400;
+        font-display: block;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0e0e0e;
+        font-family: "Barlow", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(1200px 720px at 50% 40%, rgba(200, 153, 255, 0.10), rgba(200, 153, 255, 0) 62%),
+          #0e0e0e;
+      }
+      .bg::after {
+        /* faint dot grid */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1.4px, transparent 1.4px);
+        background-size: 48px 48px;
+        opacity: 0.5;
+      }
+
+      .stage {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      .world {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+
+      /* live grid — anchored slightly high so the whole top-83% is used */
+      .grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(3, 452px);
+        grid-template-rows: repeat(2, 224px);
+        gap: 30px 30px;
+        margin-top: -66px; /* nudge the cluster up out of the caption band */
+      }
+
+      .mcard {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        padding: 26px 28px;
+        background: #191919;
+        border: 1.5px solid rgba(255, 255, 255, 0.10);
+        border-radius: 14px;
+        will-change: transform;
+      }
+
+      .mtop {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .coin {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .dot {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .sym {
+        font-family: "Barlow", sans-serif;
+        font-weight: 800;
+        font-size: 34px;
+        letter-spacing: -0.01em;
+        color: #ffffff;
+      }
+      .tf {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 400;
+        font-size: 17px;
+        color: #717680;
+        padding: 4px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 100px;
+      }
+
+      .q {
+        margin-top: 16px;
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 23px;
+        line-height: 1.25;
+        color: #ababab;
+      }
+      .src {
+        margin-top: 6px;
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.05em;
+        color: #c899ff;
+      }
+
+      .bar {
+        position: relative;
+        margin-top: auto;
+        height: 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+      .fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        border-radius: 6px;
+        display: block;
+      }
+      .fill.yes {
+        background: #34d399;
+      }
+      .fill.no {
+        background: #f87171;
+      }
+
+      .mbot {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-top: 14px;
+      }
+      .odds {
+        font-family: "Barlow", sans-serif;
+        font-weight: 800;
+        font-size: 26px;
+        color: #34d399;
+      }
+      .odds.no-odds {
+        color: #f87171;
+      }
+      .vol {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 400;
+        font-size: 18px;
+        color: #717680;
+      }
+
+      /* ghost ring — dim partial cards that the zoom-out reveals */
+      .ghosts {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+      }
+      .gcard {
+        position: absolute;
+        width: 452px;
+        height: 224px;
+        background: #191919;
+        border: 1.5px solid rgba(255, 255, 255, 0.07);
+        border-radius: 14px;
+        opacity: 0.35;
+      }
+
+      /* stamp-in chip */
+      .chip {
+        position: absolute;
+        left: 50%;
+        bottom: 205px;
+        /* centering folded into the GSAP tween via xPercent:-50 — no CSS transform here
+           (GSAP transform aliases overwrite the whole transform string) */
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 26px;
+        background: rgba(200, 153, 255, 0.10);
+        border: 1.5px solid rgba(200, 153, 255, 0.22);
+        border-radius: 100px;
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 24px;
+        letter-spacing: 0.01em;
+        color: #c899ff;
+        white-space: nowrap;
+        will-change: transform;
+      }
+      .chip .cdot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #c899ff;
+        box-shadow: 0 0 10px rgba(200, 153, 255, 0.7);
+      }
+      .chip .sep {
+        color: rgba(200, 153, 255, 0.45);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // ---- Scene 1 (0–3s): 2×3 grid cascades in, staggered assemble ----
+      // fromTo so t=0 is the collapsed state under seek; power3.out smooth settle,
+      // short slide into slot (low drama), deterministic index-derived stagger.
+      const cards = gsap.utils.toArray("#grid .mcard");
+      const STAGGER = 0.09;
+      cards.forEach((el, i) => {
+        tl.fromTo(
+          el,
+          { opacity: 0, scale: 0.9, y: 34 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.62, ease: "power3.out" },
+          0.15 + i * STAGGER
+        );
+      });
+
+      // sentiment bars sweep to their odds width just after each card lands.
+      // width is set inline per card; scaleX 0→1 grows the fill to that width.
+      const fills = gsap.utils.toArray("#grid .fill");
+      fills.forEach((el, i) => {
+        tl.fromTo(
+          el,
+          { scaleX: 0 },
+          { scaleX: 1, duration: 0.5, ease: "power2.out", transformOrigin: "0% 50%" },
+          0.5 + i * STAGGER
+        );
+      });
+
+      // ---- Scene 2 (3–5s): pill chip stamps in, bottom-center ----
+      // center offset folded into xPercent so GSAP's transform doesn't drop the CSS translateX centering
+      tl.fromTo(
+        "#chip",
+        { opacity: 0, scale: 0.72, xPercent: -50, yPercent: 8 },
+        { opacity: 1, scale: 1, xPercent: -50, yPercent: 0, duration: 0.55, ease: "power3.out" },
+        3.0
+      );
+
+      // ---- Scene 3 (5–6.848s): gentle slow zoom-OUT — "a bigger venue" ----
+      // Single-wrapper virtual camera: cam.scale drives world transform via onUpdate.
+      const world = document.getElementById("world");
+      const cam = { scale: 1 };
+      function applyCamera() {
+        world.style.transform = "scale(" + cam.scale + ")";
+      }
+      applyCamera();
+      // slow continuous push-back to reveal the ghost ring at the edges
+      tl.to(
+        cam,
+        { scale: 0.86, duration: 2.6, ease: "power1.inOut", onUpdate: applyCamera },
+        4.2
+      );
+      // ghosts fade up as the camera pulls back (they enter frame from outside)
+      tl.fromTo(
+        "#ghosts .gcard",
+        { opacity: 0 },
+        { opacity: 0.35, duration: 1.6, ease: "power1.out" },
+        4.4
+      );
+
+      // NOTE: not the final frame — no exit tween (the root transition is the exit).
+
+      window.__timelines["05-venue"] = tl;
+    </script>
+  </div>
+</template>

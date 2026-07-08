@@ -1,0 +1,299 @@
+/**
+ * Molfi on-chain layer — HashKey Chain (EVM) contract calls via ethers v6.
+ *
+ * Reads use a JSON-RPC provider against the HashKey RPC; writes are signed by
+ * the connected injected wallet (MetaMask). Contracts: Market (lifecycle),
+ * PredictEscrow (real mUSDC pari-mutuel betting + on-chain ZK-gated bets),
+ * MockUSDC (faucet token), ConfidentialBet (hidden-side commitment notes),
+ * Vault (LP).
+ *
+ * (File path retains the legacy `stellar/` name so existing imports keep working;
+ * the contents target HashKey Chain / EVM only — no Stellar code remains.)
+ */
+import { BrowserProvider, JsonRpcProvider, Contract, parseUnits } from "ethers";
+import { HSK_RPC_URL } from "@/lib/hsk/chain";
+import { CONTRACTS, ABIS, MUSDC_DECIMALS } from "@/lib/stellar/contracts";
+
+// ---------------------------------------------------------------------------
+// Providers / signers
+// ---------------------------------------------------------------------------
+
+let readProvider: JsonRpcProvider | null = null;
+function reader(): JsonRpcProvider {
+  if (!readProvider) readProvider = new JsonRpcProvider(HSK_RPC_URL);
+  return readProvider;
+}
+
+interface Eip1193 {
+  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
+}
+function injectedProvider(): Eip1193 {
+  const eth = (globalThis as { ethereum?: Eip1193 }).ethereum;
+  if (!eth) throw new Error("No EVM wallet found. Install MetaMask to continue.");
+  return eth;
+}
+
+async function signer() {
+  const provider = new BrowserProvider(injectedProvider() as never);
+  return provider.getSigner();
+}
+
+function readContract(address: string, abi: unknown): Contract {
+  return new Contract(address, abi as never, reader());
+}
+async function writeContract(address: string, abi: unknown): Promise<Contract> {
+  return new Contract(address, abi as never, await signer());
+}
+
+/** Normalize a 32-byte id to a 0x-prefixed bytes32 hex string. */
+function bytes32(hex: string): string {
+  const h = hex.startsWith("0x") ? hex.slice(2) : hex;
+  return `0x${h.padStart(64, "0")}`;
+}
+
+const toUnits = (usdc: number): bigint => parseUnits(String(usdc), MUSDC_DECIMALS);
+
+async function sendAndWait(txPromise: Promise<{ hash: string; wait: () => Promise<unknown> }>) {
+  const tx = await txPromise;
+  await tx.wait();
+  return tx.hash;
+}
+
+// ---------------------------------------------------------------------------
+// Market contract (lifecycle + enumeration)
+// ---------------------------------------------------------------------------
+
+export interface OnChainMarket {
+  id: string; // hex (0x…)
+  question: string;
+  closeTs: number;
+  status: number; // 0 Trading, 1 Resolving, 2 Resolved
+  outcome: number; // 0 YES, 1 NO, 2 INVALID
+}
+
+/** Enumerate all markets and fetch each one's state. */
+export async function listMarkets(): Promise<OnChainMarket[]> {
+  const market = readContract(CONTRACTS.market, ABIS.market);
+  const ids = (await market.markets()) as string[];
+  const out: OnChainMarket[] = [];
+  for (const id of ids ?? []) {
+    const m = await getMarket(id).catch(() => null);
+    if (m) out.push(m);
+  }
+  return out;
+}
+
+/** Fetch a single market's state by bytes32 id. */
+export async function getMarket(idHex: string): Promise<OnChainMarket> {
+  const market = readContract(CONTRACTS.market, ABIS.market);
+  const m = await market.getMarket(bytes32(idHex));
+  return {
+    id: bytes32(idHex),
+    question: m.question as string,
+    closeTs: Number(m.closeTs),
+    status: Number(m.status),
+    outcome: Number(m.outcome),
+  };
+}
+
+export async function isResolved(idHex: string): Promise<boolean> {
+  const market = readContract(CONTRACTS.market, ABIS.market);
+  return Boolean(await market.isResolved(bytes32(idHex)));
+}
+
+/** Winning outcome (0 YES / 1 NO / 2 INVALID) for a resolved market. */
+export async function winningOutcome(idHex: string): Promise<number> {
+  const market = readContract(CONTRACTS.market, ABIS.market);
+  return Number(await market.winningOutcome(bytes32(idHex)));
+}
+
+// ---------------------------------------------------------------------------
+// mUSDC token + faucet
+// ---------------------------------------------------------------------------
+
+/** Claim test mUSDC to `to` (open faucet, signed by the connected wallet). */
+export async function faucet(to: string): Promise<string> {
+  const musdc = await writeContract(CONTRACTS.musdc, ABIS.musdc);
+  return sendAndWait(musdc.faucet(to));
+}
+
+/** mUSDC balance (base units) for an address. */
+export async function musdcBalance(addr: string): Promise<bigint> {
+  const musdc = readContract(CONTRACTS.musdc, ABIS.musdc);
+  return BigInt((await musdc.balanceOf(addr)) ?? 0);
+}
+
+/** Ensure the escrow (or any spender) is approved for `amount` mUSDC. */
+async function ensureApproval(owner: string, spender: string, amount: bigint): Promise<void> {
+  const musdcRead = readContract(CONTRACTS.musdc, ABIS.musdc);
+  const current = BigInt((await musdcRead.allowance(owner, spender)) ?? 0);
+  if (current >= amount) return;
+  const musdc = await writeContract(CONTRACTS.musdc, ABIS.musdc);
+  await sendAndWait(musdc.approve(spender, amount));
+}
+
+// ---------------------------------------------------------------------------
+// PredictEscrow (real mUSDC bet escrow + pari-mutuel payout)
+// ---------------------------------------------------------------------------
+
+/** Escrow `amountUsdc` mUSDC on an outcome (0=YES, 1=NO) of an on-chain market. */
+export async function escrowBet(
+  walletAddress: string,
+  marketIdHex: string,
+  outcome: number,
+  amountUsdc: number,
+): Promise<string> {
+  const amount = toUnits(amountUsdc);
+  await ensureApproval(walletAddress, CONTRACTS.predictEscrow, amount);
+  const escrow = await writeContract(CONTRACTS.predictEscrow, ABIS.predictEscrow);
+  return sendAndWait(escrow.bet(bytes32(marketIdHex), outcome, amount));
+}
+
+/**
+ * Privacy bet: escrow `amountUsdc` on `outcome`, gated by a Groth16 proof the
+ * escrow verifies ON-CHAIN before accepting. Proof arrays come from the backend
+ * ZK service (`GET /api/zk/proof` → { a, b, c, pubSignals }).
+ */
+export async function escrowBetZk(
+  walletAddress: string,
+  marketIdHex: string,
+  outcome: number,
+  amountUsdc: number,
+  a: unknown,
+  b: unknown,
+  pubSignals: unknown,
+  c?: unknown,
+): Promise<string> {
+  const amount = toUnits(amountUsdc);
+  await ensureApproval(walletAddress, CONTRACTS.predictEscrow, amount);
+  const escrow = await writeContract(CONTRACTS.predictEscrow, ABIS.predictEscrow);
+  // Callers historically pass (proof, publicInputs, domain). Support both shapes:
+  const proof = a as { a?: unknown; b?: unknown; c?: unknown };
+  const pa = proof?.a ?? a;
+  const pb = proof?.b ?? b;
+  const pc = proof?.c ?? c;
+  const signals = pubSignals ?? b;
+  return sendAndWait(
+    escrow.betZk(bytes32(marketIdHex), outcome, amount, pa, pb, pc, signals),
+  );
+}
+
+/** Claim winnings on a resolved on-chain market. */
+export async function escrowRedeem(
+  walletAddress: string,
+  marketIdHex: string,
+): Promise<string> {
+  void walletAddress;
+  const escrow = await writeContract(CONTRACTS.predictEscrow, ABIS.predictEscrow);
+  return sendAndWait(escrow.redeem(bytes32(marketIdHex)));
+}
+
+/** A wallet's escrowed stake (base units) on (market, outcome). */
+export async function escrowPosition(
+  marketIdHex: string,
+  outcome: number,
+  who: string,
+): Promise<bigint> {
+  const escrow = readContract(CONTRACTS.predictEscrow, ABIS.predictEscrow);
+  return BigInt((await escrow.position(bytes32(marketIdHex), outcome, who)) ?? 0);
+}
+
+/** Total mUSDC (base units) escrowed across both sides of a market. */
+export async function escrowTotal(marketIdHex: string): Promise<bigint> {
+  const escrow = readContract(CONTRACTS.predictEscrow, ABIS.predictEscrow);
+  return BigInt((await escrow.total(bytes32(marketIdHex))) ?? 0);
+}
+
+/** Total mUSDC (base units) escrowed on one outcome (the real on-chain pool). */
+export async function escrowPool(marketIdHex: string, outcome: number): Promise<bigint> {
+  const escrow = readContract(CONTRACTS.predictEscrow, ABIS.predictEscrow);
+  return BigInt((await escrow.pool(bytes32(marketIdHex), outcome)) ?? 0);
+}
+
+// ---------------------------------------------------------------------------
+// Legacy settlement helpers (kept for API stability; map onto PredictEscrow)
+// ---------------------------------------------------------------------------
+
+export async function balance(trader: string): Promise<bigint> {
+  return musdcBalance(trader);
+}
+export async function position(
+  holder: string,
+  marketHex: string,
+  outcome: number,
+): Promise<bigint> {
+  return escrowPosition(marketHex, outcome, holder);
+}
+export async function escrow(marketHex: string): Promise<bigint> {
+  return escrowTotal(marketHex);
+}
+export async function deposit(trader: string, amount: bigint): Promise<string> {
+  return vaultDepositOnChain(trader, Number(amount) / 10 ** MUSDC_DECIMALS);
+}
+export async function redeem(
+  holder: string,
+  marketHex: string,
+): Promise<string> {
+  return escrowRedeem(holder, marketHex);
+}
+
+// ---------------------------------------------------------------------------
+// LP vault (deposit mUSDC on-chain)
+// ---------------------------------------------------------------------------
+
+/**
+ * Deposit `amountUsdc` mUSDC into the on-chain LP vault. The Vault contract holds
+ * token balances directly, so a deposit is an mUSDC transfer into the vault.
+ */
+export async function vaultDepositOnChain(
+  walletAddress: string,
+  amountUsdc: number,
+): Promise<string> {
+  void walletAddress;
+  const amount = toUnits(amountUsdc);
+  const musdc = await writeContract(CONTRACTS.musdc, ABIS.musdc);
+  return sendAndWait(musdc.transfer(CONTRACTS.vault, amount));
+}
+
+// ---------------------------------------------------------------------------
+// ConfidentialBet (hidden-side commitment notes + on-chain ZK claim)
+// ---------------------------------------------------------------------------
+
+/** Escrow one fixed-denomination commitment note (hides the chosen side). */
+export async function confidentialCommit(
+  walletAddress: string,
+  commitmentHex: string,
+): Promise<string> {
+  const conf = readContract(CONTRACTS.confidentialBet, ABIS.confidentialBet);
+  const denom = BigInt((await conf.denom()) ?? 0);
+  await ensureApproval(walletAddress, CONTRACTS.confidentialBet, denom);
+  const confW = await writeContract(CONTRACTS.confidentialBet, ABIS.confidentialBet);
+  return sendAndWait(confW.commit(bytes32(commitmentHex)));
+}
+
+/**
+ * Claim a winning confidential note. The Groth16 proof (from the backend) is
+ * verified ON-CHAIN; the nullifier is burned and payout goes to the wallet.
+ */
+export async function confidentialClaim(
+  walletAddress: string,
+  marketIdHex: string,
+  proof: { a: unknown; b: unknown; c: unknown },
+  nullifierHashHex: string,
+  _recipientFieldHex: string,
+  rootHex: string,
+): Promise<string> {
+  void _recipientFieldHex;
+  const conf = await writeContract(CONTRACTS.confidentialBet, ABIS.confidentialBet);
+  return sendAndWait(
+    conf.claim(
+      bytes32(marketIdHex),
+      proof.a,
+      proof.b,
+      proof.c,
+      bytes32(nullifierHashHex),
+      bytes32(rootHex),
+      walletAddress,
+    ),
+  );
+}

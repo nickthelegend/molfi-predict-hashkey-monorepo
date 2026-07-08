@@ -1,0 +1,40 @@
+{
+  "name": "@molfi/predict-sdk",
+  "version": "0.1.0",
+  "description": "Agent-native TypeScript SDK for Molfi prediction markets on HashKey Chain / EVM — spin up a wallet, self-faucet, and place ZK-verified bets autonomously",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "SKILL.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "hashkey",
+    "evm",
+    "prediction-market",
+    "zk",
+    "agent",
+    "molfi"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "typescript": "^5.8.3"
+  }
+}

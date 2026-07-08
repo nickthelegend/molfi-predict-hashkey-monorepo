@@ -1,0 +1,97 @@
+{
+  "summary": {
+    "webAnimations": 2,
+    "cssDeclarations": 37,
+    "scrollTargets": 0,
+    "cdpAnimations": 156,
+    "canvases": 0
+  },
+  "namedAnimations": [
+    "lx-fade-in",
+    "lx-fade-up",
+    "enter"
+  ],
+  "scrollTriggeredElements": 0,
+  "representativeAnimations": [
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "lx-fade-in",
+      "targetSelector": "svg",
+      "targetRect": {
+        "x": 1765.046875,
+        "y": 20,
+        "width": 16,
+        "height": 16,
+        "top": 20,
+        "right": 1781.046875,
+        "bottom": 36,
+        "left": 1765.046875
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease-out",
+          "composite": "auto",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "ease-out",
+          "composite": "auto",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 320,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "lx-fade-up",
+      "targetSelector": "div.lx-empty",
+      "targetRect": {
+        "x": 736,
+        "y": 703.421875,
+        "width": 448,
+        "height": 232.75,
+        "top": 703.421875,
+        "right": 1184,
+        "bottom": 936.171875,
+        "left": 736
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+          "composite": "auto",
+          "opacity": "0",
+          "transform": "translateY(8px)",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+          "composite": "auto",
+          "opacity": "1",
+          "transform": "translateY(0px)",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 480,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    }
+  ]
+}

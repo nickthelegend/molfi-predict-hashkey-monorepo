@@ -1,0 +1,432 @@
+<template data-composition-id="09-cta">
+  <style>
+    /* ---- fonts (files ship in assets/fonts/, path is relative to this file) ---- */
+    @font-face {
+      font-family: "Barlow";
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+      src: url("assets/fonts/barlow-400.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Barlow";
+      font-style: normal;
+      font-weight: 600;
+      font-display: block;
+      src: url("assets/fonts/barlow-600.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Barlow";
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+      src: url("assets/fonts/barlow-700.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Barlow";
+      font-style: normal;
+      font-weight: 800;
+      font-display: block;
+      src: url("assets/fonts/barlow-800.woff2") format("woff2");
+    }
+
+    /* ---- root: style via #root, never a class on the composition element ---- */
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: "Barlow", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* full-bleed ground rides on a clip layer, NOT on #root (matches F2's arrival) */
+    #c9-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(120% 120% at 50% 42%, #151016 0%, #0e0e0e 58%, #0b0b0b 100%);
+    }
+    /* faint ambient purple bloom under the lockup — carries over from the F2 mark */
+    #c9-bloom {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      width: 1000px;
+      height: 1000px;
+      margin-left: -500px;
+      margin-top: -500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,153,255,0.22) 0%, rgba(154,107,255,0.08) 34%, rgba(14,14,14,0) 66%);
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    /* ---- the morph anchor: mark+lockup and the CTA share this center ---- */
+    #c9-anchor {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      width: 900px;
+      height: 380px;
+      margin-left: -450px;
+      margin-top: -190px;
+    }
+
+    /* ---- Scene 1: the molfi lockup (mark + wordmark) — the outgoing morph half ---- */
+    #c9-lockup {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 700px;
+      margin-left: -350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform-origin: 50% 50%;      /* shared morph anchor with the CTA */
+      will-change: transform, opacity;
+    }
+    #c9-mark {
+      width: 176px;
+      height: 176px;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+    #c9-mark img{width:100%;height:100%;object-fit:contain;display:block} #c9-mark svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+    #c9-mstroke {
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    #c9-spark {
+      fill: #ffffff;
+      transform-box: fill-box;
+      transform-origin: center;
+      will-change: transform;
+    }
+    #c9-word {
+      margin-top: 26px;
+      font-family: "Barlow", sans-serif;
+      font-weight: 800;
+      font-size: 104px;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    /* ---- Scene 2: tagline line that fades up beneath the lockup ---- */
+    #c9-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 70%;
+      text-align: center;
+      font-family: "Barlow", sans-serif;
+      font-weight: 600;
+      font-size: 40px;
+      letter-spacing: 0.005em;
+      color: #ababab;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    #c9-line b {
+      color: #c899ff;
+      font-weight: 700;
+    }
+
+    /* ---- Scene 2/3: the CTA cluster (incoming morph half) ---- */
+    /* cluster is centered on the SAME anchor point the lockup used */
+    #c9-cta {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);   /* static centering only — no GSAP transform on this node */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      opacity: 0;
+    }
+    /* the pill carries the morph scale/press — GSAP animates transform on THIS node */
+    #c9-pill {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 27px 66px;
+      border-radius: 100px;
+      background: linear-gradient(135deg, #c899ff 0%, #9a6bff 55%, #6d4aff 100%);
+      color: #0e0e0e;
+      font-family: "Barlow", sans-serif;
+      font-weight: 700;
+      font-size: 46px;
+      letter-spacing: 0.005em;
+      white-space: nowrap;
+      box-shadow: 0 0 0 rgba(200,153,255,0.0);
+      transform-origin: 50% 50%;
+      will-change: transform, box-shadow;
+    }
+    #c9-pill .arrow {
+      display: inline-flex;
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 1;
+      transform: translateY(1px);
+    }
+    #c9-url {
+      font-family: "Barlow", sans-serif;
+      font-weight: 600;
+      font-size: 34px;
+      letter-spacing: 0.02em;
+      color: #ababab;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    #c9-url b { color: #ffffff; font-weight: 700; }
+
+    /* ripple rings — centered on the pill's click point, invisible until the press */
+    .c9-ripple {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 120px;
+      height: 120px;
+      margin-left: -60px;
+      margin-top: -60px;
+      border-radius: 50%;
+      border: 2px solid rgba(200,153,255,0.85);
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    /* ---- cursor — root level so it translates freely; arrow tip is click point ---- */
+    #c9-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 60px;
+      height: 60px;
+      pointer-events: none;
+      z-index: 100;
+      transform-origin: 0 0;   /* the arrow point is the click point */
+      opacity: 0;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+      will-change: transform, opacity;
+    }
+    #c9-cursor svg { width: 100%; height: 100%; display: block; }
+  </style>
+
+  <div id="root" data-composition-id="09-cta" data-duration="4.309" data-width="1920" data-height="1080">
+    <!-- full-bleed ground (lowest tracks) -->
+    <div id="c9-bg" class="clip" data-start="0" data-duration="4.309" data-track-index="0"></div>
+    <div id="c9-bloom" class="clip" data-start="0" data-duration="4.309" data-track-index="1"></div>
+
+    <!-- morph anchor: lockup (outgoing) + CTA (incoming) share this box's center -->
+    <div id="c9-anchor" class="clip" data-start="0" data-duration="4.309" data-track-index="2">
+      <!-- Scene 1 — the molfi lockup resolves center -->
+      <div id="c9-lockup">
+        <div id="c9-mark">
+          <img class="c9-logo" src="assets/molfi-logo.png" alt="Molfi" />
+        </div>
+        <div id="c9-word">molfi</div>
+      </div>
+
+      <!-- Scene 2/3 — the CTA the mark morphs into -->
+      <div id="c9-cta">
+        <div id="c9-pill">
+          <span>Trade now</span><span class="arrow">&#8594;</span>
+          <span class="c9-ripple" id="c9-ripple-1"></span>
+          <span class="c9-ripple" id="c9-ripple-2"></span>
+        </div>
+        <div id="c9-url"><b>molfi</b>.fun</div>
+      </div>
+    </div>
+
+    <!-- Scene 2 — the tagline line -->
+    <div id="c9-line" class="clip" data-start="1.7" data-duration="2.609" data-track-index="3">
+      Bet in private, on <b>Stellar</b>.
+    </div>
+
+    <!-- cursor lands the click on the pill -->
+    <svg id="c9-cursor" class="clip" data-start="3.0" data-duration="1.309" data-track-index="4"
+         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 2 L21 12 L12 13 L7 22 Z" fill="#ffffff" stroke="#0e0e0e" stroke-width="1.5"
+            stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      /* ---------- Scene 1 (0.0–~1.7s): the molfi mark resolves center ---------- */
+      // condense-in from the previous frame: the lockup arrives small+soft and
+      // settles (power3, no bounce — the arrival was already sold in F2).
+      tl.fromTo(
+        "#c9-lockup",
+        { scale: 0.72, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.62, ease: "power3.out" },
+        0.0
+      );
+      // ambient bloom ignites under the mark, then eases to a low rest glow.
+      tl.fromTo(
+        "#c9-bloom",
+        { scale: 0.6, opacity: 0 },
+        { scale: 1.0, opacity: 0.85, duration: 0.5, ease: "power2.out" },
+        0.05
+      );
+      tl.to("#c9-bloom", { scale: 1.12, opacity: 0.3, duration: 0.9, ease: "power2.out" }, 0.55);
+
+      // wordmark settles beneath the mark.
+      tl.fromTo(
+        "#c9-word",
+        { y: 22, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
+        0.5
+      );
+
+      // resting aliveness — a faint rotation-only breath on the mark (logo scope
+      // only, deterministic sine driver; low amplitude so it never fights the morph).
+      var markEl = document.querySelector("#c9-mark");
+      var breath = { t: 0 };
+      tl.to(
+        breath,
+        {
+          t: 1,
+          duration: 1.5,
+          ease: "none",
+          onUpdate: function () {
+            if (!markEl) return;
+            markEl.style.rotate = (Math.sin(breath.t * Math.PI * 2) * 1.1).toFixed(3) + "deg";
+          }
+        },
+        0.7
+      );
+
+      // spark shimmer during the rest (attack-decay glow, deterministic linear driver).
+      var sparkEl = document.querySelector("#c9-spark");
+      var sparkGlow = { t: 0 };
+      tl.to(
+        sparkGlow,
+        {
+          t: 1,
+          duration: 1.6,
+          ease: "none",
+          onUpdate: function () {
+            if (!sparkEl) return;
+            var p = sparkGlow.t;
+            var env = p < 0.3 ? (p / 0.3) : (1 - (p - 0.3) / 0.7 * 0.7);
+            var blur = 14 * env;
+            sparkEl.style.filter =
+              "drop-shadow(0 0 " + blur.toFixed(2) + "px rgba(200,153,255," + (0.3 + env * 0.5).toFixed(3) + "))";
+          }
+        },
+        0.5
+      );
+
+      /* ---------- Scene 2 (~1.7–3.4s): the line, then the mark→CTA morph ---------- */
+      // "Bet in private, on Stellar." fades up beneath the lockup on its VO cue.
+      tl.fromTo(
+        "#c9-line",
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.55, ease: "power2.out" },
+        1.72
+      );
+
+      // SIGNATURE MOVE — scale-swap morph at the shared center: the lockup
+      // shrink-fades away exactly as the CTA pill scales up in its place. Both
+      // are centered on #c9-anchor, so the eye reads one element transforming.
+      var MORPH = 2.62;
+      var EXIT_SCALE = 0.7;
+      // the tagline line clears out of the way (fades) as the CTA takes over —
+      // NOT an exit of the frame, just a within-scene text handoff.
+      tl.to("#c9-line", { opacity: 0, y: -10, duration: 0.34, ease: "power2.in" }, MORPH - 0.06);
+      // outgoing: lockup shrinks + fades (rushing away, power2.in)
+      tl.to(
+        "#c9-lockup",
+        { scale: EXIT_SCALE, opacity: 0, duration: 0.4, ease: "power2.in" },
+        MORPH
+      );
+      tl.set("#c9-lockup", { opacity: 0 }, MORPH + 0.4);
+      // incoming cluster becomes visible (opacity handoff on the wrapper; the
+      // pill itself carries the scale so the wrapper keeps its static centering).
+      tl.set("#c9-cta", { opacity: 1 }, MORPH + 0.18);
+      // incoming pill: scale up from EXIT_SCALE with spring overshoot (arriving).
+      tl.fromTo(
+        "#c9-pill",
+        { scale: EXIT_SCALE },
+        { scale: 1, duration: 0.6, ease: "back.out(1.7)" },
+        MORPH + 0.4 - 0.16   /* enter starts before the exit finishes → OVERLAP ~0.16s */
+      );
+      // molfi.fun reveals just after the pill settles (content lands after shape).
+      tl.fromTo(
+        "#c9-url",
+        { y: 14, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.42, ease: "power3.out" },
+        MORPH + 0.62
+      );
+
+      /* ---------- Scene 3 (~3.3–4.309s): cursor arrives + presses ---------- */
+      // pill screen center: anchor center is (960, 0.42*1080 = 453.6). The pill
+      // sits at the cluster center offset up by half the (pill + gap + url) stack
+      // (~64px) → click point ~ (960, 430). Cursor lands a few px OFF for a
+      // human aim, and its arrow TIP (transform-origin 0 0) is the click point.
+      var PILL_X = 968, PILL_Y = 430;
+      // cursor fades in mid-approach (hard-ish opacity in) then decelerates to the pill.
+      tl.fromTo("#c9-cursor", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, 3.0);
+      tl.fromTo(
+        "#c9-cursor",
+        { x: 1180, y: 300 },
+        { x: PILL_X, y: PILL_Y, duration: 0.62, ease: "power3.out" },  /* decel arrival */
+        3.0
+      );
+
+      // coordinated press — cursor + pill compress together (lockstep), then
+      // release with spring overshoot. Single target array = physical sync.
+      var PRESS_AT = 3.78;
+      var PRESS_INTENSITY = 0.08;
+      tl.to(
+        ["#c9-pill", "#c9-cursor"],
+        { scale: 1 - PRESS_INTENSITY, duration: 0.12, ease: "power1.in" },
+        PRESS_AT
+      );
+      // release: pill springs back to 1.0; cursor also releases.
+      tl.to("#c9-cursor", { scale: 1, duration: 0.5, ease: "back.out(1.9)" }, PRESS_AT + 0.12);
+      tl.to("#c9-pill", { scale: 1, duration: 0.5, ease: "back.out(1.9)" }, PRESS_AT + 0.12);
+
+      // press glow: pill blooms a soft purple halo on contact, then eases to rest.
+      tl.to("#c9-pill", { boxShadow: "0 0 44px rgba(200,153,255,0.55)", duration: 0.12, ease: "power1.in" }, PRESS_AT);
+      tl.to("#c9-pill", { boxShadow: "0 0 26px rgba(200,153,255,0.28)", duration: 0.55, ease: "power2.out" }, PRESS_AT + 0.12);
+
+      // release ripple — two rings radiate from the click point (attack-decay).
+      tl.set(["#c9-ripple-1", "#c9-ripple-2"], { opacity: 1 }, PRESS_AT);
+      tl.fromTo(
+        ["#c9-ripple-1", "#c9-ripple-2"],
+        { scale: 0, opacity: 0.7 },
+        { scale: 3.4, opacity: 0, duration: 0.62, ease: "power2.out", stagger: 0.09, immediateRender: false },
+        PRESS_AT
+      );
+
+      // FINAL FRAME — no exit tween. The release spring (back.out easing on the
+      // pill + cursor resolving to scale 1.0) IS the closing settle, and the
+      // ambient bloom already rests low, so the last frame breathes rather than
+      // freezing dead without a competing scale-drift on the pill (its scale is
+      // owned by the press/release through the end of the timeline).
+
+      window.__timelines["09-cta"] = tl;
+    })();
+  </script>
+</template>

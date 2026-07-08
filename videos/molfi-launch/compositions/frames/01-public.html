@@ -1,0 +1,435 @@
+<template>
+  <div id="root" data-composition-id="01-public" data-duration="6.293" data-width="1920" data-height="1080">
+    <style>
+      /* ---- Fonts (local files, no network @import) ---- */
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-600.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-700.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Barlow";
+        src: url("assets/fonts/barlow-800.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-400.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-500.woff2") format("woff2");
+        font-weight: 500;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/jbmono-700.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+
+      /* ---- Root (sized, styled via #root — never a class) ---- */
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        font-family: "Barlow", sans-serif;
+      }
+
+      /* Full-bleed ground on a clip layer (not on #root). */
+      #p1-bg {
+        position: absolute;
+        inset: 0;
+        background: #0e0e0e;
+      }
+
+      /* Faint grid that lights behind the feed (Scene 2). */
+      #p1-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(200, 153, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(200, 153, 255, 0.05) 1px, transparent 1px);
+        background-size: 96px 96px;
+        background-position: center;
+        will-change: opacity;
+      }
+
+      /* Vignette to tighten the frame in for the claustrophobic hold. */
+      #p1-vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 62% 58% at 50% 46%,
+          rgba(14, 14, 14, 0) 40%,
+          rgba(14, 14, 14, 0.72) 100%
+        );
+        will-change: opacity;
+        pointer-events: none;
+      }
+
+      /* Eyebrow tag above the ledger. */
+      #p1-eyebrow {
+        position: absolute;
+        top: 118px;
+        left: 50%;
+        margin-left: -260px;
+        width: 520px;
+        text-align: center;
+        font-family: "Barlow", sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+        color: #717680;
+        will-change: transform, opacity;
+      }
+
+      /* Centered ledger column — the public bet feed. */
+      #p1-ledger {
+        position: absolute;
+        top: 196px;
+        left: 50%;
+        margin-left: -440px;
+        width: 880px;
+        height: 660px;
+        will-change: transform;
+      }
+      /* Soft top/bottom fade so rows dissolve as they drift up. */
+      #p1-ledger-mask {
+        position: absolute;
+        inset: 0;
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          #000 12%,
+          #000 82%,
+          transparent 100%
+        );
+        mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          #000 12%,
+          #000 82%,
+          transparent 100%
+        );
+      }
+      #p1-feed {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        will-change: transform;
+      }
+
+      /* A single ledger row (JetBrains Mono). */
+      .p1-row {
+        display: flex;
+        align-items: center;
+        height: 64px;
+        padding: 0 26px;
+        border-radius: 12px;
+        background: #191919;
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        font-family: "JetBrains Mono", monospace;
+        transform-origin: 50% 50%;
+        will-change: transform, opacity;
+      }
+      .p1-addr {
+        font-weight: 500;
+        font-size: 24px;
+        letter-spacing: 0.01em;
+        color: #ababab;
+        flex: 0 0 auto;
+      }
+      .p1-dot {
+        color: #4a4a4a;
+        font-weight: 400;
+        font-size: 24px;
+        margin: 0 18px;
+        flex: 0 0 auto;
+      }
+      .p1-mkt {
+        font-weight: 500;
+        font-size: 24px;
+        color: #ffffff;
+        flex: 0 0 auto;
+      }
+      .p1-side {
+        margin-left: auto;
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: 0.06em;
+        flex: 0 0 auto;
+      }
+      .p1-yes {
+        color: #34d399;
+      }
+      .p1-no {
+        color: #f87171;
+      }
+
+      /* The p1-you-row is the spotlight anchor; ring + tag are its children
+         so they drift/sway WITH the row and always frame it exactly. */
+      #p1-you-row {
+        position: relative;
+        overflow: visible;
+      }
+      /* The purple ring that snaps around ONE row (the "you" spotlight).
+         Outer box = frame around the row + entrance scale (GSAP). */
+      #p1-ring {
+        position: absolute;
+        inset: -8px; /* a small frame just outside the row */
+        transform-origin: 50% 50%;
+        will-change: transform, opacity;
+        pointer-events: none;
+        z-index: 3;
+      }
+      /* Inner box = the visible ring + its bounded hold-pulse (onUpdate). */
+      #p1-ring-inner {
+        position: absolute;
+        inset: 0;
+        border-radius: 16px;
+        border: 2.5px solid #c899ff;
+        box-shadow:
+          0 0 0 1px rgba(200, 153, 255, 0.25),
+          0 0 42px rgba(200, 153, 255, 0.35);
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+      /* Small "you" tag pinned to the row's top-right, sitting on the ring. */
+      #p1-you {
+        position: absolute;
+        right: 2px;
+        top: -25px;
+        height: 34px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        border-radius: 100px;
+        background: #c899ff;
+        color: #0e0e0e;
+        font-family: "Barlow", sans-serif;
+        font-weight: 700;
+        font-size: 17px;
+        letter-spacing: 0.04em;
+        transform-origin: 100% 50%;
+        will-change: transform, opacity;
+        z-index: 4;
+      }
+    </style>
+
+    <!-- lowest track: full-bleed ground -->
+    <div id="p1-bg" class="clip" data-start="0" data-duration="6.293" data-track-index="0"></div>
+    <div id="p1-grid" class="clip" data-start="0" data-duration="6.293" data-track-index="1"></div>
+
+    <!-- eyebrow -->
+    <div id="p1-eyebrow" class="clip" data-start="0" data-duration="6.293" data-track-index="2">
+      PUBLIC BET FEED
+    </div>
+
+    <!-- the ledger column -->
+    <div id="p1-ledger" class="clip" data-start="0" data-duration="6.293" data-track-index="3">
+      <div id="p1-ledger-mask">
+        <div id="p1-feed">
+          <div class="p1-row">
+            <span class="p1-addr">0x4c2e…8f1a</span><span class="p1-dot">·</span>
+            <span class="p1-mkt">ETH↑</span>
+            <span class="p1-side p1-yes">YES</span>
+          </div>
+          <div class="p1-row">
+            <span class="p1-addr">0x71b0…5d9c</span><span class="p1-dot">·</span>
+            <span class="p1-mkt">SOL↓</span>
+            <span class="p1-side p1-no">NO</span>
+          </div>
+          <div class="p1-row">
+            <span class="p1-addr">0x9f4a…a2c2</span><span class="p1-dot">·</span>
+            <span class="p1-mkt">BTC↑</span>
+            <span class="p1-side p1-yes">YES</span>
+          </div>
+          <div class="p1-row">
+            <span class="p1-addr">0xd83f…1e07</span><span class="p1-dot">·</span>
+            <span class="p1-mkt">XLM↑</span>
+            <span class="p1-side p1-yes">YES</span>
+          </div>
+          <div class="p1-row">
+            <span class="p1-addr">0x2a90…bc44</span><span class="p1-dot">·</span>
+            <span class="p1-mkt">BTC↓</span>
+            <span class="p1-side p1-no">NO</span>
+          </div>
+          <div class="p1-row">
+            <span class="p1-addr">0x6e17…730b</span><span class="p1-dot">·</span>
+            <span class="p1-mkt">ETH↓</span>
+            <span class="p1-side p1-no">NO</span>
+          </div>
+          <div class="p1-row" id="p1-you-row">
+            <span class="p1-addr">0xb5c8…4fa9</span><span class="p1-dot">·</span>
+            <span class="p1-mkt">SOL↑</span>
+            <span class="p1-side p1-yes">YES</span>
+            <!-- Spotlight rides WITH this row (drift + sway carry it), so the
+                 ring always frames exactly one row. Outer = entrance scale
+                 (GSAP); inner = bounded hold-pulse (onUpdate). -->
+            <div id="p1-ring"><div id="p1-ring-inner"></div></div>
+            <div id="p1-you">you</div>
+          </div>
+          <div class="p1-row">
+            <span class="p1-addr">0x0af3…9d21</span><span class="p1-dot">·</span>
+            <span class="p1-mkt">XLM↓</span>
+            <span class="p1-side p1-no">NO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- claustrophobic vignette (over the feed, under the spotlight row) -->
+    <div id="p1-vignette" class="clip" data-start="0" data-duration="6.293" data-track-index="4"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      (function () {
+        var tl = gsap.timeline({ paused: true });
+
+        var rows = gsap.utils.toArray("#p1-feed .p1-row");
+        var feed = document.getElementById("p1-feed");
+        var grid = document.getElementById("p1-grid");
+        var vignette = document.getElementById("p1-vignette");
+
+        // ---- Scene 1 (0–2.5s): cold open — eyebrow + rows cascade up ----
+        // spring-pop-entrance: fromTo {scale:0,opacity:0} on a smooth power3.out
+        // settle (no overshoot). Deterministic index stagger; a small y-rise
+        // layers the "lifts into place" onto the scale grow.
+        tl.fromTo(
+          "#p1-eyebrow",
+          { opacity: 0, y: -14 },
+          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+          0.15
+        );
+
+        // Rows arrive bottom-first, cascading upward, paced under "public".
+        var POP_DUR = 0.62;
+        var STAGGER = 0.24; // reveals paced to the VO across Scene 1, not one chord
+        rows.forEach(function (el, i) {
+          tl.fromTo(
+            el,
+            { scale: 0.7, opacity: 0, y: 34 },
+            { scale: 1, opacity: 1, y: 0, duration: POP_DUR, ease: "power3.out" },
+            0.25 + i * STAGGER
+          );
+        });
+
+        // ---- Scene 2 (2.5–5s): density builds, grid lights, feed drifts up ----
+        // The faint grid fades in as the feed accumulates.
+        tl.fromTo(
+          grid,
+          { opacity: 0 },
+          { opacity: 1, duration: 1.1, ease: "power2.out" },
+          2.4
+        );
+
+        // Continuous upward drift of the whole feed — one long tween, no reset.
+        // Subtly accelerates (power1.in) so density reads as "building", and the
+        // masked ledger dissolves rows at the top edge as they climb.
+        tl.fromTo(
+          feed,
+          { y: 0 },
+          { y: -196, duration: 3.4, ease: "power1.in" },
+          2.0
+        );
+
+        // sine-wave-loop (low-amplitude register): a subtle collective lateral
+        // sway on the feed, bounded and finite (no yoyo). It rides on a SEPARATE
+        // carrier element (#p1-ledger-mask) so it never fights the GSAP y-drift
+        // that owns #p1-feed's transform. sin(0)=0 → starts flush.
+        var swayCarrier = document.getElementById("p1-ledger-mask");
+        var sway = { p: 0 };
+        tl.to(
+          sway,
+          {
+            p: Math.PI * 2 * 2, // 2 gentle cycles across the drift window
+            duration: 3.4,
+            ease: "none",
+            onUpdate: function () {
+              var dx = Math.sin(sway.p) * 3; // ±3px lateral — barely perceptible
+              swayCarrier.style.transform = "translateX(" + dx + "px)";
+            },
+          },
+          2.0
+        );
+
+        // Vignette deepens as the frame closes in (claustrophobia rising).
+        tl.fromTo(
+          vignette,
+          { opacity: 0 },
+          { opacity: 1, duration: 2.0, ease: "power2.inOut" },
+          3.0
+        );
+
+        // ---- Scene 3 (~4.4–end): purple ring snaps around ONE row + "you" tag ----
+        // spring-pop-entrance on the ring — a deliberate, modest snap (the one
+        // sanctioned overshoot: this IS the "you took" punctuation). Kept ≤2.
+        tl.fromTo(
+          "#p1-ring",
+          { scale: 0.86, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" },
+          4.55
+        );
+        // "you" tag pops just after the ring lands, growing from its right anchor
+        // (transform-origin:100% 50%) so it unfurls leftward off the row's corner.
+        tl.fromTo(
+          "#p1-you",
+          { scale: 0, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.42, ease: "back.out(1.9)" },
+          4.78
+        );
+        // Claustrophobic hold: a single, tiny bounded pulse on the ring so the
+        // spotlight stays alive during the freeze — low amplitude, finite,
+        // sin(0)=0 so it's flush with the landed scale. No exit (not final frame).
+        var ringPulse = { p: 0 };
+        tl.to(
+          ringPulse,
+          {
+            p: Math.PI * 2 * 1.5,
+            duration: 1.0,
+            ease: "none",
+            onUpdate: function () {
+              var s = 1 + Math.sin(ringPulse.p) * 0.012; // ±1.2% breath
+              document.getElementById("p1-ring-inner").style.transform = "scale(" + s + ")";
+            },
+          },
+          5.1
+        );
+
+        window.__timelines["01-public"] = tl;
+      })();
+    </script>
+  </div>
+</template>

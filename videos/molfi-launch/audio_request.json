@@ -1,0 +1,55 @@
+{
+  "lines": [
+    {
+      "id": "02",
+      "sfx": [
+        "soft click"
+      ]
+    },
+    {
+      "id": "03",
+      "sfx": [
+        "soft click"
+      ]
+    },
+    {
+      "id": "04",
+      "sfx": [
+        "soft click"
+      ]
+    },
+    {
+      "id": "05",
+      "sfx": [
+        "soft click"
+      ]
+    },
+    {
+      "id": "06",
+      "sfx": [
+        "soft click"
+      ]
+    },
+    {
+      "id": "07",
+      "sfx": [
+        "soft click"
+      ]
+    },
+    {
+      "id": "08",
+      "sfx": [
+        "soft click"
+      ]
+    },
+    {
+      "id": "09",
+      "sfx": [
+        "soft click"
+      ]
+    }
+  ],
+  "bgm": {
+    "mode": "none"
+  }
+}
