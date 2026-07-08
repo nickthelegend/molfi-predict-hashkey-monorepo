@@ -1,8 +1,8 @@
 ---
 format: 1920x1080
-message: "Bet in private on Stellar — and let AI agents trade it for you."
+message: "Bet in private on HashKey — and let AI agents trade it for you."
 arc: Hook/Problem → Brand turn → Bet & hide → ZK claim → On-chain venue → Agent turn → Agent lifecycle → Proof → CTA
-audience: crypto-native traders, ZK + AI-agent builders, the Stellar ecosystem
+audience: crypto-native traders, ZK + AI-agent builders, the HashKey ecosystem
 music: minimal electronic, premium, confident, restrained — a low pulse bed, not a drop
 ---
 
@@ -25,7 +25,7 @@ music: minimal electronic, premium, confident, restrained — a low pulse bed, n
 - src: compositions/frames/01-public.html
 - scene: A public bet feed scrolls; every row exposes a wallet + YES/NO side; one row spotlights as "you".
 - blueprint: overwhelm-surround (adapt)
-- asset_candidates: public bet-feed (in-frame), stellar-stamp
+- asset_candidates: public bet-feed (in-frame), hashkey-stamp
 - voiceover: "Every prediction market has the same flaw. It's public. Everyone can see which side you took."
 - status: outline
 
@@ -44,13 +44,13 @@ Shot sequence:
 - scene: The exposed rows rush inward and compress into the Molfi mark; wordmark + one line.
 - blueprint: logo-assemble-lockup
 - asset_candidates: molfi-logo.svg
-- voiceover: "Molfi fixes that. Private prediction markets, on Stellar."
+- voiceover: "Molfi fixes that. Private prediction markets, on HashKey."
 - status: outline
 
 Shot sequence:
 - Scene 1 (0–2s): all F1 rows collapse toward center (converge + shrink) into a single point. Motion: fast ease-in implosion on the cut.
 - Scene 2 (2–4.5s): the molfi-logo.svg mark assembles at center (badge draws, "M" chart-peaks stroke on, spark pops on the rising peak). Motion: draw-on + spring spark.
-- Scene 3 (4.5–7s): wordmark "molfi" fades up beneath; then the line "Private prediction markets on Stellar." settles. Layout: centered lockup. Motion: fade-up, calm hold with a slow 1–2% scale drift.
+- Scene 3 (4.5–7s): wordmark "molfi" fades up beneath; then the line "Private prediction markets on HashKey." settles. Layout: centered lockup. Motion: fade-up, calm hold with a slow 1–2% scale drift.
 
 ## Frame 3 — Take your side. Then hide it.
 
@@ -95,15 +95,15 @@ Shot sequence:
 - transition_in: cut
 - src: compositions/frames/05-venue.html
 - sfx: soft click
-- scene: The live crypto markets grid self-assembles; an "on Stellar · Reflector" chip stamps in.
+- scene: The live crypto markets grid self-assembles; an "on HashKey · Oracle" chip stamps in.
 - blueprint: grid-card-assemble
-- asset_candidates: markets-grid (in-frame), stellar-stamp (in-frame)
-- voiceover: "Real markets. Real money on Stellar, settled by a live oracle — a venue that runs itself."
+- asset_candidates: markets-grid (in-frame), hashkey-stamp (in-frame)
+- voiceover: "Real markets. Real money on HashKey, settled by a live oracle — a venue that runs itself."
 - status: outline
 
 Shot sequence:
-- Scene 1 (0–3s): market cards cascade into a 2×3 grid — "BTC / ETH / SOL … above its price at close? · Reflector · 15m", each with a green/pink sentiment bar + odds. Layout: centered grid. Motion: staggered card assemble.
-- Scene 2 (3–5s): a small "on Stellar · Soroban · settled by Reflector" chip stamps in bottom-center. Motion: chip spring-pop.
+- Scene 1 (0–3s): market cards cascade into a 2×3 grid — "BTC / ETH / SOL … above its price at close? · Oracle · 15m", each with a green/pink sentiment bar + odds. Layout: centered grid. Motion: staggered card assemble.
+- Scene 2 (3–5s): a small "on HashKey · Solidity · settled by the oracle" chip stamps in bottom-center. Motion: chip spring-pop.
 - Scene 3 (5–7s): a slow camera zoom-OUT reveals more cards at the edges (a bigger venue), holding on the phrase "runs itself" — the bridge into Act 2. Motion: gentle zoom-out drift.
 
 ## Frame 6 — Not just for people
@@ -149,15 +149,15 @@ Shot sequence:
 - transition_in: cut
 - src: compositions/frames/08-proof.html
 - sfx: soft click
-- scene: A hero "+96 mUSDC" stat with three tx-hash chips + a "Stellar testnet" tag.
+- scene: A hero "+96 mUSDC" stat with three tx-hash chips + a "HashKey testnet" tag.
 - blueprint: dataviz-countup
-- asset_candidates: zk-proof-verify (in-frame), stellar-stamp (in-frame)
-- voiceover: "Every step — a real transaction on Stellar."
+- asset_candidates: zk-proof-verify (in-frame), hashkey-stamp (in-frame)
+- voiceover: "Every step — a real transaction on HashKey."
 - status: outline
 
 Shot sequence:
 - Scene 1 (0–2s): "+96 mUSDC" counts up big in green, center. Motion: count-up with a settle overshoot.
-- Scene 2 (2–4s): three truncated tx-hash chips (`bet_zk 0e9bca76…`, `resolve d1eb6e7c…`, `redeem 09f89119…`) chip in below a small "Stellar testnet" tag. Motion: staggered chip pop; hold.
+- Scene 2 (2–4s): three truncated tx-hash chips (`bet_zk 0e9bca76…`, `resolve d1eb6e7c…`, `redeem 09f89119…`) chip in below a small "HashKey testnet" tag. Motion: staggered chip pop; hold.
 
 ## Frame 9 — Trade now
 
@@ -166,13 +166,13 @@ Shot sequence:
 - transition_in: crossfade
 - src: compositions/frames/09-cta.html
 - sfx: soft click
-- scene: The Molfi mark condenses to the CTA lockup; "Bet in private, on Stellar," then a "Trade now" pill + molfi.fun.
+- scene: The Molfi mark condenses to the CTA lockup; "Bet in private, on HashKey," then a "Trade now" pill + molfi.fun.
 - blueprint: cta-morph-press
 - asset_candidates: molfi-logo.svg
-- voiceover: "Molfi. Bet in private, on Stellar. Trade now — at molfi.fun."
+- voiceover: "Molfi. Bet in private, on HashKey. Trade now — at molfi.fun."
 - status: outline
 
 Shot sequence:
 - Scene 1 (0–2s): the molfi-logo.svg mark resolves center; wordmark settles beneath. Motion: condense-in from the previous frame.
-- Scene 2 (2–3.5s): the line "Bet in private, on Stellar." fades up. Motion: fade-up.
+- Scene 2 (2–3.5s): the line "Bet in private, on HashKey." fades up. Motion: fade-up.
 - Scene 3 (3.5–5s): a purple **Trade now** pill spring-pops with **molfi.fun** beneath it; a cursor lands one soft click on the pill. Motion: spring-pop pill + click feedback; hold on brand + CTA.

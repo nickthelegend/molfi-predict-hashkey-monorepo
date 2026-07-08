@@ -25,6 +25,7 @@ import {
 } from "./data.js";
 import type { ConfidentialNote, Groth16Calldata, SideInput, TxResult } from "./types.js";
 import { createWallet, makeProvider, walletFromPrivateKey, walletInfo, type MolfiWallet } from "./wallet.js";
+import { payForProof } from "./hsp.js";
 
 export interface CreateOptions {
   /** Restore an existing agent from a private key instead of a fresh wallet. */
@@ -148,6 +149,23 @@ export class MolfiAgent {
     const proof = await fetchSolvencyProof(this.config);
     if ("error" in proof) throw new Error(`ZK proof service: ${proof.error}`);
     return this.chain.betZk(marketId, side, amount, proof as Groth16Calldata);
+  }
+
+  /**
+   * Solvency-gated ZK bet where the agent PAYS for its proof via HSP. Runs the
+   * full HSP x402 loop (sign mandate → settle on-chain → adapter receipt →
+   * unlock proof), then places the ZK bet. Returns the bet tx plus the HSP
+   * settlement tx. This is the AI × DeFi × HSP path — an autonomous agent that
+   * pays a verifiable micro-fee for the privacy primitive it needs.
+   */
+  async betZkViaHSP(
+    marketId: string,
+    side: SideInput,
+    amount: number,
+  ): Promise<TxResult & { settlementTx: string; paymentId: string }> {
+    const { proof, settlementTx, paymentId } = await payForProof(this.wallet, this.config);
+    const tx = await this.chain.betZk(marketId, side, amount, proof as Groth16Calldata);
+    return { ...tx, settlementTx, paymentId };
   }
 
   /** Claim winnings after the market resolves. */

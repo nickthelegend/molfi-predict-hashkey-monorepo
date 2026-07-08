@@ -16,6 +16,7 @@ import { readFileSync } from "fs";
 import { randomBytes, createHash } from "crypto";
 import { groth16 } from "snarkjs";
 import { ethers } from "ethers";
+import * as hsp from "./hsp.js";
 import "dotenv/config";
 
 const PORT = Number(process.env.PORT) || 4000;
@@ -267,7 +268,8 @@ await Vaults.updateOne({ _id: VAULT_ID },
 
 await pollPrices();
 setInterval(pollPrices, 10_000);
-if (KEEPER) { keeperTick(); setInterval(keeperTick, 90_000); }
+if (KEEPER && process.env.MOLFI_KEEPER !== "off") { keeperTick(); setInterval(keeperTick, 90_000); }
+else if (KEEPER) console.log("[keeper] market loop disabled (MOLFI_KEEPER=off) — HSP adapter still active");
 setInterval(indexEscrowEvents, 20_000);
 
 // ── HTTP API ───────────────────────────────────────────────────────────────────
@@ -362,6 +364,79 @@ app.get("/api/zk/proof", async (_req, res) => {
     res.json({ a, b, c, pubSignals: pub, domain });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
+
+// ── HSP: HashKey Settlement Protocol (DeFi payment rail) ────────────────────────
+// The backend plays the HSP *adapter* (signs receipts) and *coordinator* (observes),
+// forwarding to the official Coordinator when HSP_COORDINATOR_URL is set. Agents pay
+// a micro-fee via HSP to unlock the premium ZK proof service (x402 paywall) — the
+// fee settles, zero-custody, to the protocol vault.
+const HSP_NETWORK = CHAIN_ID === 177 ? "hashkey" : "hashkey-testnet";
+const HSP_MERCHANT = process.env.HSP_MERCHANT || dep.vault;      // fees → protocol vault
+const HSP_PROOF_PRICE = BigInt(process.env.HSP_PROOF_PRICE || String(Math.round(0.5 * U))); // 0.5 mUSDC
+const HSP_TOKEN = dep.mUSDC;
+const hspAdapter = KEEPER; // the keeper signs receipts as the pinned HSP adapter
+
+app.get("/api/hsp/info", (_req, res) => res.json({
+  network: HSP_NETWORK, chainId: CHAIN_ID, token: HSP_TOKEN, merchant: HSP_MERCHANT,
+  adapter: hspAdapter ? hspAdapter.address : null, capability: hsp.CAP_SETTLEMENT,
+  priceProof: HSP_PROOF_PRICE.toString(), coordinator: process.env.HSP_COORDINATOR_URL || null,
+  chains: hsp.HSP_CHAINS,
+}));
+
+// Adapter observes a settlement the payer already made on-chain, and signs a Receipt.
+// Body: { mandate, mandateSig, txHash }. Also forwards to the official Coordinator if set.
+app.post("/api/hsp/observe", async (req, res) => {
+  try {
+    if (!hspAdapter) return res.status(503).json({ error: "HSP adapter not configured (set PRIVATE_KEY)" });
+    const { mandate, mandateSig, txHash } = req.body || {};
+    if (!mandate || !txHash) return res.status(400).json({ error: "mandate + txHash required" });
+    const paymentId = ethers.TypedDataEncoder.hash(
+      { name: "HSP", version: "1", chainId: mandate.chainId },
+      { Mandate: [
+        { name: "payer", type: "address" }, { name: "to", type: "address" }, { name: "token", type: "address" },
+        { name: "amount", type: "uint256" }, { name: "chainId", type: "uint256" }, { name: "nonce", type: "uint256" },
+        { name: "expiry", type: "uint256" }, { name: "capabilities", type: "string" }] },
+      { payer: mandate.payer, to: mandate.to, token: mandate.token, amount: BigInt(mandate.amount),
+        chainId: BigInt(mandate.chainId), nonce: BigInt(mandate.nonce), expiry: BigInt(mandate.expiry),
+        capabilities: mandate.capabilities });
+    const signed = await hsp.signReceipt(hspAdapter, {
+      paymentId, txHash, chainId: mandate.chainId, to: mandate.to, amount: mandate.amount,
+    });
+    const coord = hsp.coordinator();
+    let coordinatorAck = null;
+    if (coord) { try { coordinatorAck = await coord.observe(paymentId, txHash); } catch {} }
+    res.json({ ...signed, paymentId, coordinatorAck, receiptSig: signed.signature });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// Independent verification of a full payment bundle (the HSP rule).
+app.post("/api/hsp/verify", async (req, res) => {
+  try {
+    const { mandate, mandateSig, receipt, receiptSig, adapter } = req.body || {};
+    const v = await hsp.verifyPayment(provider, {
+      mandate, mandateSig, receipt, receiptSig, adapter,
+      pinnedAdapter: hspAdapter ? hspAdapter.address : undefined,
+    });
+    res.json(v);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// Premium ZK proof — gated behind an HSP x402 paywall. An agent must settle a
+// micro-fee via HSP (verified here) before the proof is served.
+app.get("/api/premium/zk/proof",
+  hsp.hspPaywall({
+    provider, chainId: CHAIN_ID, token: HSP_TOKEN, to: HSP_MERCHANT,
+    amount: HSP_PROOF_PRICE, pinnedAdapter: hspAdapter ? hspAdapter.address : undefined,
+  }),
+  async (_req, res) => {
+    try {
+      const domain = String(Date.now() * 1000 + (zkNonce++ % 1000));
+      const { a, b, c, pub } = await proveCalldata("solvency", {
+        domain, threshold: String(100 * U), balance: String(275 * U),
+      });
+      res.json({ a, b, c, pubSignals: pub, domain, paidVia: "HSP" });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
 
 // ── Confidential betting: hidden note → on-chain ZK claim ───────────────────────
 const confField = () => BigInt("0x" + randomBytes(31).toString("hex")).toString();

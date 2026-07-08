@@ -21,6 +21,10 @@ ZK-verified bet, and redeem — with no human in the loop.
   wallet, funds itself from the mUSDC faucet, and autonomously places **ZK-verified** bets and
   redeems — the "AI-driven intelligent trading" the track calls for, with the privacy guarantees
   an automated trader needs (its balance and its side stay hidden on-chain).
+- **HSP:** settlement runs on **HSP (HashKey Settlement Protocol)** — the recommended DeFi rail.
+  An agent pays a verifiable micro-fee via HSP to unlock the privacy primitive it needs (the ZK
+  proof service, behind an x402 paywall); the fee settles zero-custody to the protocol vault and
+  is independently verifiable. See §2.5.
 
 ---
 
@@ -51,6 +55,34 @@ generates fresh proofs and drives the whole thing with real transactions. A reco
 View on `https://testnet-explorer.hsk.xyz/tx/<hash>`.
 
 ---
+
+## 2.5. HSP integration (HashKey Settlement Protocol)
+
+Molfi uses **HSP** as its DeFi payment rail — "verify the settlement, not the promise." The
+integration (`molfi-backend/hsp.js`, `molfi-predict-sdk/src/hsp.ts`) implements HSP's wire model
+directly so it runs self-contained on HashKey and drops into the official HSP Coordinator when
+`HSP_COORDINATOR_URL` + `HSP_API_KEY` are set:
+
+- **Mandate** — the payer signs an EIP-712 intent (`primaryType: "Mandate"`, v1).
+- **Settlement** — a zero-custody ERC-20 (mUSDC) transfer from the payer's own wallet.
+- **Receipt** — the adapter observes the on-chain tx and signs it (`proves:settlement-verified:v1`).
+- **Verification** — `ACCEPT ⟺ requiredCapabilities ⊆ satisfiedCapabilities`, plus the on-chain
+  transfer is re-checked from logs; the coordinator can't move funds, so a lie fails verification.
+
+**The headline flow — an agent pays via HSP to get a ZK proof (x402 paywall).** Proven live on
+HashKey testnet (`node molfi-backend/hsp_demo.mjs`):
+
+```
+[1] GET /api/premium/zk/proof            → 402  (HSP requires 0.5 mUSDC → protocol vault)
+[2] sign mandate → [3] settle on-chain → [4] adapter signs receipt
+[5] retry with X-PAYMENT header          → 200  proof unlocked (paidVia HSP)
+[6] independent verify                   → ACCEPT (6/6 checks pass)
+```
+
+Settlement tx: `https://testnet-explorer.hsk.xyz/tx/0x040e97b5bfa9af33755aa2095ee92b29df09e96b94cebe522864a498788e3f99`
+
+In the SDK it's one call: `await agent.betZkViaHSP(marketId, "YES", 50)` — pay for the proof via
+HSP, then place the private bet.
 
 ## 3. The differentiator: agent-native
 
@@ -122,8 +154,9 @@ all three ZK flows on mainnet.
   follow-up.
 - Proving is currently server-assisted (backend ZK service). Moving proof generation client-side
   (browser wasm) is a drop-in next step — the on-chain verification path is unchanged.
-- **HSP** (HashKey's DeFi payment rails) is the natural next integration for real-money settlement
-  and merchant payouts; the current build settles in on-chain mUSDC escrow.
+- **HSP** is integrated as a self-contained adapter/coordinator (§2.5) and verified live on testnet.
+  Wiring it to the *official* HSP Coordinator only needs the organizer's `HSP_COORDINATOR_URL` +
+  `HSP_API_KEY`; the mandate/receipt/verification and on-chain settlement are already real.
 
 ---
 

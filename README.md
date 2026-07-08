@@ -25,6 +25,7 @@ Built for the **HashKey Chain On-Chain Horizon Hackathon** (DeFi × AI).
 - 🤖 **Agent-native** — an LLM agent reads one `SKILL.md`, spins up a wallet, funds itself, places a **ZK-verified** bet, settles, and redeems — autonomously.
 - ⛓️ **Really on-chain** — real `mUSDC` escrow, pari-mutuel payouts, and **BN254 Groth16 proofs verified inside the HashKey transaction** (via the `alt_bn128` precompiles).
 - 📈 **Live oracle** — markets settle from a multi-asset push price feed; a keeper auto-rolls 15m/30m crypto markets so the venue runs itself.
+- 💸 **HSP-settled** — payments use **HSP (HashKey Settlement Protocol)**: an agent pays a verifiable micro-fee to unlock the ZK proof service (x402 paywall), settled zero-custody and independently verifiable. `node molfi-backend/hsp_demo.mjs`.
 
 ## 🧠 Three ZK mechanisms — all verified on-chain
 

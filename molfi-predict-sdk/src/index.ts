@@ -67,3 +67,5 @@ export type {
 
 // ── ABIs (self-contained) ─────────────────────────────────────────────────────
 export { MUSDC_ABI, ESCROW_ABI, CONFIDENTIAL_ABI, MARKET_ABI } from "./abis.js";
+
+export { payForProof, type PaidProof } from "./hsp.js";

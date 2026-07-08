@@ -18,7 +18,7 @@
 **Time:** 7.0 – 14.0s
 **Delivery:** The turn. Calm confidence; small lift on "Molfi."
 
-    Mohlfye fixes that. Private prediction markets, on Stellar.
+    Mohlfye fixes that. Private prediction markets, on HashKey.
 
 ## Line 3 — Take your side, then hide it (Frame 3)
 
@@ -39,7 +39,7 @@
 **Time:** 30.0 – 37.0s
 **Delivery:** Grounded, factual. "Runs itself" trails off into the next thought.
 
-    Real markets. Real money on Stellar, settled by a live oracle — a venue that runs itself.
+    Real markets. Real money on HashKey, settled by a live oracle — a venue that runs itself.
 
 ## Line 6 — Not just people (Frame 6)
 
@@ -60,11 +60,11 @@
 **Time:** 53.0 – 57.0s
 **Delivery:** Quiet, factual. Receipts, not hype.
 
-    Every step — a real transaction on Stellar.
+    Every step — a real transaction on HashKey.
 
 ## Line 9 — CTA (Frame 9)
 
 **Time:** 55.0 – 60.0s
 **Delivery:** Warm, final, unrushed. A beat before "Trade now."
 
-    Mohlfye. Bet in private, on Stellar. Trade now — at Mohlfye dot fun.
+    Mohlfye. Bet in private, on HashKey. Trade now — at Mohlfye dot fun.
