@@ -176,8 +176,12 @@ function chartAssetForOracle(oracles: readonly PredictOracleSummary[], oracleId:
   return baseFromUnderlying(oracle?.underlying_asset ?? "") || oracleId.slice(2, 6).toUpperCase();
 }
 
-export async function loadAppShell(queryClient: QueryClient) {
-  await Promise.all([ensurePredictOracles(queryClient), ensureIndexerProtocol(queryClient)]);
+export async function loadAppShell(_queryClient: QueryClient) {
+  // Molfi reads markets, prices, and vault state from its own backend + on-chain
+  // (not the legacy LeverX/predict indexer). Those indexer fetches are dead and
+  // can hang, which would block every `_app` route from ever leaving its pending
+  // skeleton. So the app-shell loader is a no-op — routes render immediately.
+  return null;
 }
 
 export async function loadMarketsRoute(queryClient: QueryClient) {
